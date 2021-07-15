@@ -1,0 +1,9 @@
+# build files
+bin/
+compile_commands.json
+
+# testing files
+test/
+
+# no clue what this is
+.cache/
