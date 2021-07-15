@@ -31,6 +31,9 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 		}
 	}
 
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
+		instruction_update_refs( chunk, chunk.instructions[i] );
+
 	// skip other debug info bc fuck it
 	l_int count = read_int32( stream, little_endian );
 	for ( l_int i = 0; i < count; ++i ) { // source line pos list

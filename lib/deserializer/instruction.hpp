@@ -61,6 +61,10 @@ struct instruction_t {
 	int32_t a;
 	int32_t b;
 	int32_t c;
+
+	uint8_t* ref_a;
+	uint8_t* ref_b;
+	uint8_t* ref_c;
 };
 
 #endif
