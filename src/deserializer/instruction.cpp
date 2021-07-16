@@ -1,3 +1,4 @@
+#include <cstdint>
 #include <iostream>
 #include <fstream>
 
@@ -81,53 +82,5 @@ void decode_instructions( chunk_t& chunk, std::ifstream& stream, bool little_end
 				break;
 
 		}
-	}
-}
-
-
-void instruction_update_refs( chunk_t& chunk, instruction_t& instruction ) {
-	switch ( instruction.opcode ) {
-
-		case OP_LOADK:
-		case OP_GETGLOBAL:
-		case OP_SETGLOBAL:
-			instruction.ref_b = reinterpret_cast<uint8_t*>( &chunk.constants[ instruction.b ] );
-			break;
-
-		case OP_GETTABLE:
-		case OP_SELF:
-			if ( instruction.c & 256 )
-				instruction.ref_c = reinterpret_cast<uint8_t*>( &chunk.constants[ instruction.c ^ 256 ] );
-			break;
-
-		case OP_SETTABLE:
-		case OP_ADD:
-		case OP_SUB:
-		case OP_MUL:
-		case OP_DIV:
-		case OP_MOD:
-		case OP_POW:
-		case OP_EQ:
-		case OP_LT:
-		case OP_LE:
-			if ( instruction.b & 256 )
-				instruction.ref_b = reinterpret_cast<uint8_t*>( &chunk.constants[ instruction.b ^ 256 ] );
-			if ( instruction.c & 256 )
-				instruction.ref_c = reinterpret_cast<uint8_t*>( &chunk.constants[ instruction.c ^ 256 ] );
-			break;
-
-		case OP_JMP:
-		case OP_FORPREP:
-		case OP_FORLOOP:
-			instruction.ref_b = reinterpret_cast<uint8_t*>( &chunk.instructions[ chunk.instruction_maps[ &instruction ] + instruction.b + 1 ] );
-			break;
-
-		case OP_CLOSURE:
-			instruction.ref_b = reinterpret_cast<uint8_t*>( &chunk.functions[ instruction.b ] );
-			break;
-
-		default: // shut up compiler
-			break;
-
 	}
 }

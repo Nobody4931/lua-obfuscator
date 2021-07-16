@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <random>
 #include <ctime>
 #include <iostream>
@@ -6,6 +5,7 @@
 
 #include "deserializer/deserializer.hpp"
 #include "deserializer/datatypes.hpp"
+#include "deserializer/instruction.hpp"
 #include "deserializer/chunk.hpp"
 
 chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
@@ -34,17 +34,10 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 		}
 	}
 
-	chunk_update_maps( chunk );
-
-	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
-		instruction_update_refs( chunk, chunk.instructions[i] );
-
-	// messes up refs
-	//std::default_random_engine random_engine( time( nullptr ) );
-	//std::shuffle( chunk.constants, chunk.constants + chunk.constant_cnt, random_engine );
-	//std::shuffle( chunk.functions, chunk.functions + chunk.function_cnt, random_engine );
-
-	//chunk_update_maps( chunk );
+	// shuffle stuff
+	std::default_random_engine rand_engine( time( nullptr ) );
+	shuffle_constants( chunk, rand_engine );
+	shuffle_functions( chunk, rand_engine );
 
 	// skip other debug info bc fuck it
 	l_int count = read_int32( stream, little_endian );
@@ -68,17 +61,31 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 }
 
 
-void chunk_update_maps( chunk_t& chunk ) {
-	chunk.instruction_maps.clear();
-	chunk.constant_maps.clear();
-	chunk.function_maps.clear();
-
-	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
-		chunk.instruction_maps[ &chunk.instructions[i] ] = i;
-
-	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
-		chunk.constant_maps[ &chunk.constants[i] ] = i;
-
+void shuffle_functions( chunk_t& chunk, std::default_random_engine rand_engine ) {
+	std::map<l_int, l_int> shuffle_map;
 	for ( l_int i = 0; i < chunk.function_cnt; ++i )
-		chunk.function_maps[ &chunk.functions[i] ] = i;
+		shuffle_map[i] = i;
+
+	for ( l_int i = 0; i < chunk.function_cnt; ++i ) {
+		l_int swap_idx = rand_engine() % ( i + 1 );
+
+		std::swap( chunk.functions[ i ], chunk.functions[ swap_idx ] );
+		std::swap( shuffle_map[ i ], shuffle_map[ swap_idx ] );
+	}
+
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i ) {
+		instruction_t& instruction = chunk.instructions[i];
+
+		// thanks lua for making so many bullshit instruction field rules!
+		switch ( instruction.opcode ) {
+
+			case OP_CLOSURE:
+				instruction.b = shuffle_map[ instruction.b ];
+				break;
+
+			default: // shut up compiler
+				break;
+
+		}
+	}
 }

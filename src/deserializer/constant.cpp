@@ -1,8 +1,13 @@
+#include <cstdint>
+#include <random>
+#include <utility>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include "deserializer/deserializer.hpp"
 #include "deserializer/datatypes.hpp"
+#include "deserializer/instruction.hpp"
 #include "deserializer/constant.hpp"
 #include "deserializer/chunk.hpp"
 
@@ -42,6 +47,60 @@ void decode_constants( chunk_t& chunk, std::ifstream& stream, bool little_endian
 			case const_t::K_STRING:
 				chunk.constants[i].data = reinterpret_cast<uint8_t*>(
 						new l_string( read_string( stream, little_endian ) ) );
+				break;
+
+		}
+	}
+}
+
+
+void shuffle_constants( chunk_t& chunk, std::default_random_engine rand_engine ) {
+	std::map<l_int, l_int> shuffle_map;
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
+		shuffle_map[i] = i;
+
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i ) {
+		l_int swap_idx = rand_engine() % ( i + 1 );
+
+		std::swap( chunk.constants[ i ], chunk.constants[ swap_idx ] );
+		std::swap( shuffle_map[ i ], shuffle_map[ swap_idx ] );
+	}
+
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i ) {
+		instruction_t& instruction = chunk.instructions[i];
+
+		// thanks lua for making so many bullshit instruction field rules!
+		switch ( instruction.opcode ) {
+
+			case OP_LOADK:
+			case OP_GETGLOBAL:
+			case OP_SETGLOBAL:
+				instruction.b = shuffle_map[ instruction.b ];
+				break;
+
+			case OP_GETTABLE:
+			case OP_SELF:
+				if ( instruction.c & 256 )
+					instruction.c = shuffle_map[ instruction.c ^ 256 ];
+				break;
+
+			case OP_SETTABLE:
+			case OP_ADD:
+			case OP_SUB:
+			case OP_MUL:
+			case OP_DIV:
+			case OP_MOD:
+			case OP_POW:
+			case OP_EQ:
+			case OP_LT:
+			case OP_LE:
+				if ( instruction.b & 256 )
+					instruction.b = shuffle_map[ instruction.b ^ 256 ];
+				if ( instruction.c & 256 )
+					instruction.c = shuffle_map[ instruction.c ^ 256 ];
+				break;
+
+			default: // shut up compiler
 				break;
 
 		}

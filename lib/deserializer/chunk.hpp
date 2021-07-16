@@ -33,10 +33,6 @@ struct chunk_t {
 
 	l_int function_cnt;
 	chunk_t* functions;
-
-	std::map<instruction_t*, l_int> instruction_maps;
-	std::map<constant_t*, l_int> constant_maps;
-	std::map<chunk_t*, l_int> function_maps;
 };
 
 #endif
