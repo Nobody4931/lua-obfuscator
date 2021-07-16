@@ -15,6 +15,9 @@ namespace fs = std::filesystem;
 
 #if DEBUG_MODE == 1
 
+#include "bytecode/constant.hpp"
+#include "bytecode/instruction.hpp"
+
 static const char* instruction_names[] {
 	"MOVE",
 	"LOADK",
