@@ -2,10 +2,9 @@
 some lua 5.1 vm based obfuscator thing
 
 ## todo
-* shuffle constants
-* shuffle prototypes
-* update registers (instruction fields)
-	* should be done using a custom shuffling function
+* ~~shuffle constants~~
+* ~~shuffle prototypes~~
+* ~~update registers (instruction fields)~~
 * create virtual machine opcodes
 * generate virtual machine
 
