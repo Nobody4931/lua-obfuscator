@@ -1,3 +1,6 @@
+#include <algorithm>
+#include <random>
+#include <ctime>
 #include <iostream>
 #include <fstream>
 
@@ -35,6 +38,13 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 
 	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
 		instruction_update_refs( chunk, chunk.instructions[i] );
+
+	// messes up refs
+	//std::default_random_engine random_engine( time( nullptr ) );
+	//std::shuffle( chunk.constants, chunk.constants + chunk.constant_cnt, random_engine );
+	//std::shuffle( chunk.functions, chunk.functions + chunk.function_cnt, random_engine );
+
+	//chunk_update_maps( chunk );
 
 	// skip other debug info bc fuck it
 	l_int count = read_int32( stream, little_endian );

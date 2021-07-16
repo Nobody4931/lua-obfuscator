@@ -2,12 +2,10 @@
 some lua 5.1 vm based obfuscator thing
 
 ## todo
-* ~~update mappings~~
-* ~~update references~~
 * shuffle constants
 * shuffle prototypes
-* update mappings (again)
 * update registers (instruction fields)
+	* should be done using a custom shuffling function
 * create virtual machine opcodes
 * generate virtual machine
 
