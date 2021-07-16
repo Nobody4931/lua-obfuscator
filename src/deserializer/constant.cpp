@@ -3,7 +3,6 @@
 #include <utility>
 #include <iostream>
 #include <fstream>
-#include <map>
 
 #include "deserializer/deserializer.hpp"
 #include "deserializer/datatypes.hpp"
@@ -55,16 +54,12 @@ void decode_constants( chunk_t& chunk, std::ifstream& stream, bool little_endian
 
 
 void shuffle_constants( chunk_t& chunk, std::default_random_engine rand_engine ) {
-	std::map<l_int, l_int> shuffle_map;
+	l_int shuffle_map[ chunk.constant_cnt ];
 	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
 		shuffle_map[i] = i;
 
-	for ( l_int i = 0; i < chunk.constant_cnt; ++i ) {
-		l_int swap_idx = rand_engine() % ( i + 1 );
-
-		std::swap( chunk.constants[ i ], chunk.constants[ swap_idx ] );
-		std::swap( shuffle_map[ i ], shuffle_map[ swap_idx ] );
-	}
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
+		std::swap( shuffle_map[ i ], shuffle_map[ rand_engine() % ( i + 1 ) ] );
 
 	for ( l_int i = 0; i < chunk.instruction_cnt; ++i ) {
 		instruction_t& instruction = chunk.instructions[i];
@@ -103,6 +98,13 @@ void shuffle_constants( chunk_t& chunk, std::default_random_engine rand_engine )
 			default: // shut up compiler
 				break;
 
+		}
+	}
+
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i ) {
+		while ( shuffle_map[i] != i ) {
+			std::swap( chunk.constants[ i ], chunk.constants[ shuffle_map[i] ] );
+			std::swap( shuffle_map[ i ], shuffle_map[ shuffle_map[i] ] );
 		}
 	}
 }
