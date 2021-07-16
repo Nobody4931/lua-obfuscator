@@ -76,7 +76,7 @@ void shuffle_constants( chunk_t& chunk, std::default_random_engine& rand_engine 
 			case OP_GETTABLE:
 			case OP_SELF:
 				if ( instruction.c & 256 )
-					instruction.c = shuffle_map[ instruction.c ^ 256 ];
+					instruction.c = shuffle_map[ instruction.c ^ 256 ] | 256;
 				break;
 
 			case OP_SETTABLE:
@@ -90,9 +90,9 @@ void shuffle_constants( chunk_t& chunk, std::default_random_engine& rand_engine 
 			case OP_LT:
 			case OP_LE:
 				if ( instruction.b & 256 )
-					instruction.b = shuffle_map[ instruction.b ^ 256 ];
+					instruction.b = shuffle_map[ instruction.b ^ 256 ] | 256;
 				if ( instruction.c & 256 )
-					instruction.c = shuffle_map[ instruction.c ^ 256 ];
+					instruction.c = shuffle_map[ instruction.c ^ 256 ] | 256;
 				break;
 
 			default: // shut up compiler
