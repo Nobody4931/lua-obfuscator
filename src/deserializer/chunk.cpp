@@ -31,6 +31,8 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 		}
 	}
 
+	chunk_update_maps( chunk );
+
 	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
 		instruction_update_refs( chunk, chunk.instructions[i] );
 
@@ -53,4 +55,20 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 	}
 
 	return chunk;
+}
+
+
+void chunk_update_maps( chunk_t& chunk ) {
+	chunk.instruction_maps.clear();
+	chunk.constant_maps.clear();
+	chunk.function_maps.clear();
+
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
+		chunk.instruction_maps[ &chunk.instructions[i] ] = i;
+
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
+		chunk.constant_maps[ &chunk.constants[i] ] = i;
+
+	for ( l_int i = 0; i < chunk.function_cnt; ++i )
+		chunk.function_maps[ &chunk.functions[i] ] = i;
 }
