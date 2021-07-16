@@ -7,6 +7,10 @@ some lua 5.1 vm based obfuscator thing
 * ~~update registers (instruction fields)~~
 * create virtual machine opcodes
 * generate virtual machine
+	* serialize bytecode
+	* apply vm template scripts
+	* generate opcode mutations
+	* generate opcode handlers
 
 ## not faq
 
