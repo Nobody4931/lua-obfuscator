@@ -2,8 +2,8 @@
 some lua 5.1 vm based obfuscator thing
 
 ## todo
-* update mappings
-* update references
+* ~~update mappings~~
+* ~~update references~~
 * shuffle constants
 * shuffle prototypes
 * update mappings (again)
