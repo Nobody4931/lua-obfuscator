@@ -8,7 +8,124 @@
 #include "deserializer/deserializer.hpp"
 #include "deserializer/chunk.hpp"
 
+#define DEBUG_MODE 1
+
 namespace fs = std::filesystem;
+
+
+#if DEBUG_MODE == 1
+
+static const char* instruction_names[] {
+	"MOVE",
+	"LOADK",
+	"LOADBOOL",
+	"LOADNIL",
+	"GETUPVAL",
+	"GETGLOBAL",
+	"GETTABLE",
+	"SETGLOBAL",
+	"SETUPVAL",
+	"SETTABLE",
+	"NEWTABLE",
+	"SELF",
+	"ADD",
+	"SUB",
+	"MUL",
+	"DIV",
+	"MOD",
+	"POW",
+	"UNM",
+	"NOT",
+	"LEN",
+	"CONCAT",
+	"JMP",
+	"EQ",
+	"LT",
+	"LE",
+	"TEST",
+	"TESTSET",
+	"CALL",
+	"TAILCALL",
+	"RETURN",
+	"FORLOOP",
+	"FORPREP",
+	"TFORLOOP",
+	"SETLIST",
+	"CLOSE",
+	"CLOSURE",
+	"VARARG",
+};
+
+static inline void indent( uint16_t depth ) {
+	for ( uint16_t i = 0; i < depth; ++i ) {
+		std::cout << "    "; // why the fuck is a tab character 8 spaces
+	}
+}
+
+static inline void output_chunk( chunk_t& chunk, uint16_t depth = 0 ) {
+	indent( depth );
+	std::cout << "Constants:\n";
+	for ( l_int i = 0; i < chunk.constant_cnt; ++i ) {
+		indent( depth );
+		std::cout << '[' << i << "]: ";
+		switch ( chunk.constants[i].type ) {
+			case const_t::K_NIL:
+				std::cout << "nil";
+				break;
+
+			case const_t::K_BOOLEAN:
+				std::cout << ( *chunk.constants[i].data ? "true" : "false" );
+				break;
+
+			case const_t::K_NUMBER:
+				std::cout << *reinterpret_cast<l_number*>( chunk.constants[i].data );
+				break;
+
+			case const_t::K_STRING:
+				std::cout << '"' << reinterpret_cast<l_string*>( chunk.constants[i].data )->data << '"';
+				break;
+		}
+		std::cout << '\n';
+	}
+	std::cout << '\n';
+
+	indent( depth );
+	std::cout << "Functions:\n";
+	for ( l_int i = 0; i < chunk.function_cnt; ++i ) {
+		indent( depth );
+		std::cout << '[' << i << "]:\n";
+		output_chunk( chunk.functions[i], depth + 1 );
+	}
+	std::cout << '\n';
+
+	indent( depth );
+	std::cout << "Instructions:\n";
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i ) {
+		indent( depth );
+		std::cout << '[' << i << "]: ";
+		std::cout << instruction_names[ chunk.instructions[i].opcode ] << ' ';
+		// fuck you lua
+		switch ( chunk.instructions[i].type ) {
+			case instr_t::i_ABC:
+				std::cout
+					<< chunk.instructions[i].a << ' '
+					<< chunk.instructions[i].b << ' '
+					<< chunk.instructions[i].c;
+				break;
+
+			case instr_t::i_ABx:
+			case instr_t::i_AsBx:
+				std::cout
+					<< chunk.instructions[i].a << ' '
+					<< chunk.instructions[i].b;
+				break;
+		}
+		std::cout << '\n';
+	}
+	std::cout << '\n';
+}
+
+#endif // DEBUG_MODE == 1
 
 int main( int argc, char** argv ) {
 	if ( argc != 3 ) {
@@ -79,6 +196,10 @@ int main( int argc, char** argv ) {
 
 	chunk_t tl_chunk = decode_file( luacfile );
 	luacfile.close();
+
+#if DEBUG_MODE == 1
+	output_chunk( tl_chunk );
+#endif
 
 
 	std::cout << "Obfuscating...\n\n";
