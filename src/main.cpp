@@ -141,7 +141,7 @@ int main( int argc, char** argv ) {
 		throw "INVALID_PATH";
 	}
 
-	std::ofstream outfile( outfile_p.c_str(), std::ios::out );
+	std::ofstream outfile( outfile_p.c_str(), std::ofstream::out );
 	if ( !outfile ) {
 		std::cerr << "Error: Could not open output file for reading" << std::endl;
 		throw "ACCESS_DENIED_O";
