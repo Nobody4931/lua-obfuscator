@@ -188,7 +188,7 @@ int main( int argc, char** argv ) {
 
 	std::cout << "Deserializing...\n\n";
 
-	std::ifstream luacfile( luacfile_p.c_str() );
+	std::ifstream luacfile( luacfile_p.c_str(), std::ifstream::in | std::ifstream::binary );
 	if ( !luacfile ) {
 		std::cerr << "Error: Could not open luac file for deserialization" << std::endl;
 		throw "ACCESS_DENIED_L";
