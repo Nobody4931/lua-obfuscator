@@ -61,7 +61,7 @@ chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 }
 
 
-void shuffle_functions( chunk_t& chunk, std::default_random_engine rand_engine ) {
+void shuffle_functions( chunk_t& chunk, std::default_random_engine& rand_engine ) {
 	l_int shuffle_map[ chunk.function_cnt ];
 	for ( l_int i = 0; i < chunk.function_cnt; ++i )
 		shuffle_map[i] = i;

@@ -53,7 +53,7 @@ void decode_constants( chunk_t& chunk, std::ifstream& stream, bool little_endian
 }
 
 
-void shuffle_constants( chunk_t& chunk, std::default_random_engine rand_engine ) {
+void shuffle_constants( chunk_t& chunk, std::default_random_engine& rand_engine ) {
 	l_int shuffle_map[ chunk.constant_cnt ];
 	for ( l_int i = 0; i < chunk.constant_cnt; ++i )
 		shuffle_map[i] = i;
