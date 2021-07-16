@@ -2,6 +2,7 @@
 #include <ctime>
 #include <iostream>
 #include <fstream>
+#include <map>
 
 #include "deserializer/deserializer.hpp"
 #include "deserializer/datatypes.hpp"
