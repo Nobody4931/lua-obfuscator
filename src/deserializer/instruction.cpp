@@ -119,8 +119,7 @@ void instruction_update_refs( chunk_t& chunk, instruction_t& instruction ) {
 		case OP_JMP:
 		case OP_FORPREP:
 		case OP_FORLOOP:
-			// do this after update mappings
-			// set sbx ref to instruction
+			instruction.ref_b = reinterpret_cast<uint8_t*>( &chunk.instructions[ chunk.instruction_maps[ &instruction ] + instruction.b + 1 ] );
 			break;
 
 		case OP_CLOSURE:
