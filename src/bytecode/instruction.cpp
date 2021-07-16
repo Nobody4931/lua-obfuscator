@@ -2,10 +2,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "deserializer/deserializer.hpp"
-#include "deserializer/datatypes.hpp"
-#include "deserializer/instruction.hpp"
-#include "deserializer/chunk.hpp"
+#include "bytecode/deserializer.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/instruction.hpp"
+#include "bytecode/chunk.hpp"
 
 static const instr_t instruction_mappings[] {
 	i_ABC,		/* OP_MOVE */

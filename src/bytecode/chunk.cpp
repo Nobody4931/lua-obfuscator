@@ -3,10 +3,10 @@
 #include <iostream>
 #include <fstream>
 
-#include "deserializer/deserializer.hpp"
-#include "deserializer/datatypes.hpp"
-#include "deserializer/instruction.hpp"
-#include "deserializer/chunk.hpp"
+#include "bytecode/deserializer.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/instruction.hpp"
+#include "bytecode/chunk.hpp"
 
 chunk_t decode_chunk( std::ifstream& stream, bool little_endian ) {
 	chunk_t chunk {

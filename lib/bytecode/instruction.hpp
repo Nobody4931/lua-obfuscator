@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "deserializer/datatypes.hpp"
+#include "bytecode/datatypes.hpp"
 
 enum instr_t : uint8_t {
 	i_ABC  = 0,

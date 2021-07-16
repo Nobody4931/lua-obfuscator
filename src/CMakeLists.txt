@@ -1,8 +1,8 @@
 list(APPEND PROJECT_LIBS
-	"deserializer/deserializer.cpp"
-	"deserializer/chunk.cpp"
-	"deserializer/instruction.cpp"
-	"deserializer/constant.cpp")
+	"bytecode/deserializer.cpp"
+	"bytecode/chunk.cpp"
+	"bytecode/instruction.cpp"
+	"bytecode/constant.cpp")
 
 add_executable(${PROJECT_NAME}
 	${PROJECT_LIBS}

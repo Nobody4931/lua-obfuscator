@@ -2,9 +2,9 @@
 #include <iostream>
 #include <fstream>
 
-#include "deserializer/deserializer.hpp"
-#include "deserializer/datatypes.hpp"
-#include "deserializer/chunk.hpp"
+#include "bytecode/deserializer.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/chunk.hpp"
 
 chunk_t decode_file( std::ifstream& stream ) {
 	uint8_t* signature = read_some( stream, 4, false );

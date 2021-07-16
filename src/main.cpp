@@ -5,8 +5,8 @@
 #include <fstream>
 #include <filesystem>
 
-#include "deserializer/deserializer.hpp"
-#include "deserializer/chunk.hpp"
+#include "bytecode/deserializer.hpp"
+#include "bytecode/chunk.hpp"
 
 #define DEBUG_MODE 1
 

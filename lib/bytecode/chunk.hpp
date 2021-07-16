@@ -4,9 +4,9 @@
 
 #include <cstdint>
 
-#include "deserializer/datatypes.hpp"
-#include "deserializer/instruction.hpp"
-#include "deserializer/constant.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/instruction.hpp"
+#include "bytecode/constant.hpp"
 
 enum vararg_flag_t : uint8_t {
 	VA_HASARG   = (1 << 0),

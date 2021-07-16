@@ -6,8 +6,8 @@
 #include <iostream>
 #include <fstream>
 
-#include "deserializer/chunk.hpp"
-#include "deserializer/instruction.hpp"
+#include "bytecode/chunk.hpp"
+#include "bytecode/instruction.hpp"
 
 
 chunk_t decode_file( std::ifstream& stream );

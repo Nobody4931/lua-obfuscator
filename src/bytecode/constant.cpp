@@ -4,11 +4,11 @@
 #include <iostream>
 #include <fstream>
 
-#include "deserializer/deserializer.hpp"
-#include "deserializer/datatypes.hpp"
-#include "deserializer/instruction.hpp"
-#include "deserializer/constant.hpp"
-#include "deserializer/chunk.hpp"
+#include "bytecode/deserializer.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/instruction.hpp"
+#include "bytecode/constant.hpp"
+#include "bytecode/chunk.hpp"
 
 void decode_constants( chunk_t& chunk, std::ifstream& stream, bool little_endian ) {
 	chunk.constant_cnt = read_int32( stream, little_endian );
