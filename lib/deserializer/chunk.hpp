@@ -3,7 +3,6 @@
 #define CHUNK_HEADER_HPP
 
 #include <cstdint>
-#include <map>
 
 #include "deserializer/datatypes.hpp"
 #include "deserializer/instruction.hpp"
