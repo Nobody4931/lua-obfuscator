@@ -4,7 +4,7 @@
 
 #include <cstdint>
 
-#include "datatypes.hpp"
+#include "bytecode/datatypes.hpp"
 
 enum const_t : uint8_t {
 	K_NIL     = 0,
