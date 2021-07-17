@@ -4,6 +4,9 @@ list(APPEND PROJECT_LIBS
 	"bytecode/instruction.cpp"
 	"bytecode/constant.cpp")
 
+list(APPEND PROJECT_LIBS
+	"vm/generator.cpp")
+
 add_executable(${PROJECT_NAME}
 	${PROJECT_LIBS}
 	main.cpp)

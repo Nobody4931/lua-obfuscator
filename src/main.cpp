@@ -7,6 +7,7 @@
 
 #include "bytecode/deserializer.hpp"
 #include "bytecode/chunk.hpp"
+#include "vm/generator.hpp"
 
 #define DEBUG_MODE 1
 
@@ -206,6 +207,12 @@ int main( int argc, char** argv ) {
 
 
 	std::cout << "Obfuscating...\n\n";
+
+	std::string obfuscated;
+	generate_vm( tl_chunk, obfuscated );
+
+	outfile.write( obfuscated.c_str(), obfuscated.size() );
+	outfile.flush();
 
 	outfile.close();
 }
