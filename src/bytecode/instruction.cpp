@@ -78,7 +78,7 @@ void decode_instructions( chunk_t& chunk, std::ifstream& stream, bool little_end
 				break;
 
 			case instr_t::i_AsBx:
-				chunk.instructions[i].b = static_cast<int32_t>( ( (data >> (6 + 8)) & ((1 << 18) - 1) ) - ((1 << 17) - 1) );
+				chunk.instructions[i].b = static_cast<int32_t>( (data >> (6 + 8)) & ((1 << 18) - 1) ) - ( (1 << 17) - 1 );
 				break;
 
 		}
