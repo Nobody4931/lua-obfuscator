@@ -6,6 +6,7 @@
 #include <algorithm>
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 typedef uint32_t l_int;
 typedef uint32_t l_size;
@@ -26,6 +27,7 @@ inline bool is_little_endian() {
 
 	return aabbccdd.int8[0] == 0xDD;
 }
+
 
 inline uint8_t* read_some( std::ifstream& stream, size_t count, bool factor_endianness, bool little_endian = true ) {
 	uint8_t* bytes = new uint8_t[ count ];
@@ -73,6 +75,36 @@ inline l_string read_string( std::ifstream& stream, bool little_endian ) {
 	if ( size == 0 )
 		return { size, nullptr };
 	return { size, read_some( stream, size, true, little_endian ) };
+}
+
+
+inline void write_some( std::vector<uint8_t>& buffer, uint8_t* bytes, size_t count, bool factor_endianness, bool little_endian = true ) {
+	auto iterator = buffer.insert( buffer.end(), bytes, bytes + count );
+	if ( factor_endianness && little_endian != is_little_endian() ) {
+		std::reverse( iterator, iterator + count );
+	}
+}
+
+inline void write_byte( std::vector<uint8_t>& buffer, uint8_t data ) {
+	buffer.push_back( data );
+}
+
+inline void write_int32( std::vector<uint8_t>& buffer, uint32_t data, bool little_endian ) {
+	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 4, true, little_endian );
+}
+
+inline void write_int64( std::vector<uint8_t>& buffer, uint64_t data, bool little_endian ) {
+	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 8, true, little_endian );
+}
+
+inline void write_double( std::vector<uint8_t>& buffer, double data, bool little_endian ) {
+	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 8, true, little_endian );
+}
+
+inline void write_string( std::vector<uint8_t>& buffer, l_string data, bool little_endian ) {
+	write_int32( buffer, data.size, little_endian );
+	write_some( buffer, data.data, data.size, true, little_endian );
+	write_byte( buffer, 0 );
 }
 
 #endif
