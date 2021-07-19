@@ -1,5 +1,6 @@
 list(APPEND PROJECT_LIBS
 	"bytecode/deserializer.cpp"
+	"bytecode/serializer.cpp"
 	"bytecode/chunk.cpp"
 	"bytecode/instruction.cpp"
 	"bytecode/constant.cpp")

@@ -4,7 +4,10 @@
 
 #include <cstdint>
 #include <string>
+#include <vector>
+#include <map>
 
+#include "bytecode/instruction.hpp"
 #include "bytecode/chunk.hpp"
 
 enum class chunk_order_t : uint8_t {
@@ -21,8 +24,14 @@ enum class instr_order_t : uint8_t {
 };
 
 struct obfuscation_context_t {
+	std::vector<uint8_t> bytecode;
+
 	chunk_order_t* chunk_order;
 	instr_order_t* instr_order;
+
+	std::map<const_t, uint8_t> const_map;
+	std::map<opcode_t, std::vector<uint8_t>> opcode_map;
+
 	uint8_t param_xor_key;
 	uint8_t chunk_xor_key;
 	uint8_t instr_xor_key;

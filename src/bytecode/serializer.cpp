@@ -1,0 +1,79 @@
+#include <cstdint>
+
+#include "bytecode/serializer.hpp"
+#include "bytecode/datatypes.hpp"
+#include "bytecode/instruction.hpp"
+#include "bytecode/constant.hpp"
+#include "bytecode/chunk.hpp"
+#include "vm/generator.hpp"
+
+// TODO: make vm opcodes bc fuck lua
+static inline void serialize_instruction( obfuscation_context_t& context, instruction_t& instruction, bool little_endian ) {
+	for ( uint8_t i = 0; i < 3; ++i ) {
+		switch ( context.instr_order[i] ) {
+
+			case instr_order_t::ORD_OPCODE:
+				break;
+
+			case instr_order_t::ORD_ENUM:
+				break;
+
+			case instr_order_t::ORD_FIELDS:
+				break;
+
+		}
+	}
+}
+
+static inline void serialize_constant( obfuscation_context_t& context, constant_t& constant, bool little_endian ) {
+	switch ( constant.type ) {
+
+		case const_t::K_NIL: // shut up compiler
+			break;
+
+		case const_t::K_BOOLEAN:
+			write_byte( context.bytecode, *constant.data );
+			break;
+
+		case const_t::K_NUMBER:
+			write_double( context.bytecode, *reinterpret_cast<l_number*>( constant.data ), little_endian );
+			break;
+
+		case const_t::K_STRING:
+			write_some( context.bytecode, constant.data, reinterpret_cast<l_string*>( constant.data )->size, true, little_endian );
+			break;
+
+	}
+}
+
+void serialize_chunk( obfuscation_context_t& context, chunk_t& chunk, bool little_endian ) {
+	for ( uint8_t i = 0; i < 4; ++i ) {
+		switch ( context.chunk_order[i] ) {
+
+			case chunk_order_t::ORD_PARAM_CNT:
+				write_byte( context.bytecode, chunk.parameter_cnt );
+				break;
+
+			case chunk_order_t::ORD_INSTRUCTIONS:
+				write_int32( context.bytecode, chunk.instruction_cnt, little_endian );
+				for ( l_int i = 0; i < chunk.instruction_cnt; ++i )
+					serialize_instruction( context, chunk.instructions[i], little_endian );
+				break;
+
+			case chunk_order_t::ORD_CONSTANTS: // security probably wtf
+				write_int32( context.bytecode, chunk.constant_cnt, little_endian );
+				for ( l_int i = 0; i < chunk.constant_cnt; ++i )
+					write_byte( context.bytecode, context.const_map[ chunk.constants[i].type ] );
+				for ( l_int i = 0; i < chunk.constant_cnt; ++i )
+					serialize_constant( context, chunk.constants[i], little_endian );
+				break;
+
+			case chunk_order_t::ORD_PROTOTYPES:
+				write_int32( context.bytecode, chunk.function_cnt, little_endian );
+				for ( l_int i = 0; i < chunk.function_cnt; ++i )
+					serialize_chunk( context, chunk.functions[i], little_endian );
+				break;
+
+		}
+	}
+}
