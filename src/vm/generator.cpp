@@ -21,8 +21,6 @@ static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_
 	return byte;
 }
 
-// TODO: create map for opcode_t -> vopcode_t* instances (ptr bc polymorphism or some shit)
-
 void generate_vm( chunk_t& chunk, std::string& out ) {
 	std::default_random_engine rand_engine( time( nullptr ) );
 
@@ -65,6 +63,8 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 	context.const_map[ const_t::K_STRING ] = unique_byte( used_bytes, rand_engine );
 
 	used_bytes.clear();
+
+	// TODO: create map for opcode_t -> vopcode_t* instances (ptr bc polymorphism or some shit)
 
 	for ( uint8_t i = 0; i < 38; ++i ) {
 		uint8_t gen_cnt = 3 + rand_engine() % 3; // [3, 5]
