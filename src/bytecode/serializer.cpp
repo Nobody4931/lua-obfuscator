@@ -1,4 +1,6 @@
 #include <cstdint>
+#include <random>
+#include <ctime>
 
 #include "bytecode/serializer.hpp"
 #include "bytecode/datatypes.hpp"
@@ -7,18 +9,45 @@
 #include "bytecode/chunk.hpp"
 #include "vm/generator.hpp"
 
-// TODO: make vm opcodes bc fuck lua
 static inline void serialize_instruction( obfuscation_context_t& context, instruction_t& instruction, bool little_endian ) {
+	static std::default_random_engine rand_engine( time( nullptr ) );
+
 	for ( uint8_t i = 0; i < 3; ++i ) {
+		instr_t type = instruction_mappings[ instruction.opcode ];
+
+		uint8_t op_idx = rand_engine() % context.opcode_map[ instruction.opcode ].size();
+		while ( !context.opcode_map[ instruction.opcode ][ op_idx ].second->valid( instruction ) )
+			op_idx = ( op_idx + 1 ) % context.opcode_map[ instruction.opcode ].size();
+
 		switch ( context.instr_order[i] ) {
 
 			case instr_order_t::ORD_OPCODE:
+				write_byte( context.bytecode, context.opcode_map[ instruction.opcode ][ op_idx ].first );
 				break;
 
 			case instr_order_t::ORD_ENUM:
+				write_byte( context.bytecode, type );
 				break;
 
 			case instr_order_t::ORD_FIELDS:
+				write_byte( context.bytecode, instruction.a );
+
+				switch ( type ) {
+
+					case instr_t::i_ABC:
+						write_int16( context.bytecode, instruction.b, little_endian );
+						write_int16( context.bytecode, instruction.c, little_endian );
+						break;
+
+					case instr_t::i_ABx:
+						write_int32( context.bytecode, instruction.b, little_endian );
+						break;
+
+					case instr_t::i_AsBx:
+						write_int32( context.bytecode, instruction.b + ( (1 << 17) - 1 ), little_endian );
+						break;
+
+				}
 				break;
 
 		}

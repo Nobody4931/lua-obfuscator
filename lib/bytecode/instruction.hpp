@@ -63,4 +63,7 @@ struct instruction_t {
 	int32_t c;
 };
 
+
+extern const instr_t instruction_mappings[];
+
 #endif

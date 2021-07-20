@@ -89,6 +89,10 @@ inline void write_byte( std::vector<uint8_t>& buffer, uint8_t data ) {
 	buffer.push_back( data );
 }
 
+inline void write_int16( std::vector<uint8_t>& buffer, uint16_t data, bool little_endian ) {
+	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 2, true, little_endian );
+}
+
 inline void write_int32( std::vector<uint8_t>& buffer, uint32_t data, bool little_endian ) {
 	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 4, true, little_endian );
 }

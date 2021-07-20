@@ -7,7 +7,7 @@
 #include "bytecode/instruction.hpp"
 #include "bytecode/chunk.hpp"
 
-static const instr_t instruction_mappings[] {
+const instr_t instruction_mappings[] {
 	i_ABC,		/* OP_MOVE */
 	i_ABx,		/* OP_LOADK */
 	i_ABC,		/* OP_LOADBOOL */
