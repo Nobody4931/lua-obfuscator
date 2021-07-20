@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <utility>
+#include <memory>
 #include <random>
 #include <ctime>
 #include <string>
@@ -16,8 +17,10 @@
 #include "opcodes/opcodes.hpp"
 
 // TODO: create rest of the opcodes
-static vmutator_t* virtual_mutators[] {
-	new vmut_move_t()   /* OP_MOVE */
+
+// because for some fucking reason i trusted the words of some random guy on discord
+static std::unique_ptr<vmutator_t> virtual_mutators[] {
+	std::make_unique< vmut_move_t >()		/* OP_MOVE */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {

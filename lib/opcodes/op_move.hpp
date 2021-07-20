@@ -14,7 +14,7 @@ public:
 	}
 
 	std::string string() override {
-		return "Stack[1] = Stack[2]";
+		return "Stack[Instr[1]] = Stack[Instr[2]]";
 	}
 };
 

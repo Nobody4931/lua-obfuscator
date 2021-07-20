@@ -29,9 +29,8 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 				write_byte( context.bytecode, type );
 				break;
 
-			case instr_order_t::ORD_FIELDS:
+			case instr_order_t::ORD_FIELDS: // always 5 bytes
 				write_byte( context.bytecode, instruction.a );
-
 				switch ( type ) {
 
 					case instr_t::i_ABC:
