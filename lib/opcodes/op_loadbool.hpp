@@ -17,7 +17,7 @@ public:
 
 	std::string string() override {
 		return R"(Stack[Instr[1]] = Instr[2] ~= 0
-		if (Instr[3] ~= 0) then
+		if Instr[3] ~= 0 then
 			InstrPtr = InstrPtr + 1
 		end)";
 	}
@@ -40,7 +40,7 @@ class vop_loadbool_3_t : public vopcode_t {
 	}
 
 	std::string string() override {
-		return R"(if (Instr[2] == 0) then
+		return R"(if Instr[2] == 0 then
 			Stack[Instr[1]] = false
 		else
 			Stack[Instr[1]] = true
@@ -55,7 +55,7 @@ class vop_loadbool_c1_t : public vopcode_t {
 	}
 
 	std::string string() override {
-		return R"(if (Instr[2] ~= 0) then
+		return R"(if Instr[2] ~= 0 then
 			Stack[Instr[1]] = true
 		else
 			Stack[Instr[1]] = false
@@ -81,7 +81,7 @@ class vop_loadbool_b1_t : public vopcode_t {
 
 	std::string string() override {
 		return R"(Stack[Instr[1]] = not nil
-		while (Instr[3] ~= 0) do
+		while Instr[3] ~= 0 do
 			InstrPtr = InstrPtr + 1
 			break
 		end)";
