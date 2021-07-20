@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <utility>
 #include <random>
 #include <ctime>
 #include <string>
@@ -11,6 +12,12 @@
 #include "bytecode/instruction.hpp"
 #include "bytecode/serializer.hpp"
 #include "vm/generator.hpp"
+#include "opcodes/vopcode.hpp"
+#include "opcodes/opcodes.hpp"
+
+static vmutator_t* virtual_mutators[] {
+	new vmut_move_t()   /* OP_MOVE */
+};
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
 	uint8_t byte;
@@ -47,7 +54,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		.instr_order = instr_order,
 
 		.const_map = std::map<const_t, uint8_t>(),
-		.opcode_map = std::map<opcode_t, std::vector<uint8_t>>(),
+		.opcode_map = std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>>(),
 
 		.param_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.chunk_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
@@ -64,13 +71,13 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 	used_bytes.clear();
 
-	// TODO: create map for opcode_t -> vopcode_t* instances (ptr bc polymorphism or some shit)
-
 	for ( uint8_t i = 0; i < 38; ++i ) {
 		uint8_t gen_cnt = 3 + rand_engine() % 3; // [3, 5]
 		for ( uint8_t j = 0; j < gen_cnt; ++j ) {
-			context.opcode_map[ static_cast<opcode_t>( i ) ]
-				.push_back( unique_byte( used_bytes, rand_engine ) );
+			context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
+				unique_byte( used_bytes, rand_engine ),
+				virtual_mutators[ i ]->mutate()
+			} );
 		}
 	}
 

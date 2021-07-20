@@ -3,12 +3,14 @@
 #define GENERATOR_HEADER_HPP
 
 #include <cstdint>
+#include <utility>
 #include <string>
 #include <vector>
 #include <map>
 
 #include "bytecode/instruction.hpp"
 #include "bytecode/chunk.hpp"
+#include "opcodes/vopcode.hpp"
 
 enum class chunk_order_t : uint8_t {
 	ORD_PARAM_CNT    = 0, // i think this is needed?
@@ -30,7 +32,7 @@ struct obfuscation_context_t {
 	instr_order_t* instr_order;
 
 	std::map<const_t, uint8_t> const_map;
-	std::map<opcode_t, std::vector<uint8_t>> opcode_map;
+	std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>> opcode_map;
 
 	uint8_t param_xor_key;
 	uint8_t chunk_xor_key;
