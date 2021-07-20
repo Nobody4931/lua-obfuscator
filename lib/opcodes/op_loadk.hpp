@@ -9,11 +9,11 @@
 
 class vop_loadk_t : public vopcode_t {
 public:
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADK;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return "Stack[Instr[1]] = Constants[Instr[2]]";
 	}
 };

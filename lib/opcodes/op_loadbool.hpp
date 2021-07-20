@@ -11,11 +11,11 @@
 
 class vop_loadbool_1_t : public vopcode_t {
 public:
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(Stack[Instr[1]] = Instr[2] ~= 0
 		if (Instr[3] ~= 0) then
 			InstrPtr = InstrPtr + 1
@@ -24,22 +24,22 @@ public:
 };
 
 class vop_loadbool_2_t : public vopcode_t {
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(Stack[Instr[1]] = not (Instr[2] == 0)
 		InstrPtr = Instr[3] == 0 and InstrPtr or InstrPtr + 1)";
 	}
 };
 
 class vop_loadbool_3_t : public vopcode_t {
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(if (Instr[2] == 0) then
 			Stack[Instr[1]] = false
 		else
@@ -50,11 +50,11 @@ class vop_loadbool_3_t : public vopcode_t {
 };
 
 class vop_loadbool_c1_t : public vopcode_t {
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.c == 0;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(if (Instr[2] ~= 0) then
 			Stack[Instr[1]] = true
 		else
@@ -64,22 +64,22 @@ class vop_loadbool_c1_t : public vopcode_t {
 };
 
 class vop_loadbool_c2_t : public vopcode_t {
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.c != 0;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(Stack[Instr[1]] = not not (Instr[2] ~= 0)
 		InstrPtr = InstrPtr + 1)";
 	}
 };
 
 class vop_loadbool_b1_t : public vopcode_t {
-	bool valid( instruction_t& instruction ) {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.b != 0;
 	}
 
-	std::string string() {
+	std::string string() override {
 		return R"(Stack[Instr[1]] = not nil
 		while (Instr[3] ~= 0) do
 			InstrPtr = InstrPtr + 1
