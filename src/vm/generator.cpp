@@ -15,6 +15,7 @@
 #include "opcodes/vopcode.hpp"
 #include "opcodes/opcodes.hpp"
 
+// TODO: create rest of the opcodes
 static vmutator_t* virtual_mutators[] {
 	new vmut_move_t()   /* OP_MOVE */
 };
@@ -82,4 +83,9 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 	}
 
 	serialize_chunk( context, chunk );
+
+	// TODO: remove testing code later
+	for ( uint8_t byte : context.bytecode )
+		std::cout << static_cast<uint16_t>( byte ) << ' ';
+	std::cout << '\n';
 }
