@@ -3,6 +3,7 @@
 #define OP_MOVE_HEADER_HPP
 
 #include <string>
+#include <random>
 
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"
@@ -20,9 +21,9 @@ public:
 
 class vmut_move_t : public vmutator_t {
 public:
-	vopcode_t* mutate() override {
+	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
 		return new vop_move_t();
-	};
+	}
 };
 
 #endif

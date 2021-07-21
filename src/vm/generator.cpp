@@ -83,7 +83,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		for ( uint8_t j = 0; j < gen_cnt; ++j ) {
 			context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
 				unique_byte( used_bytes, rand_engine ),
-				virtual_mutators[ i ]->mutate()
+				virtual_mutators[ i ]->mutate( rand_engine )
 			} );
 		}
 	}

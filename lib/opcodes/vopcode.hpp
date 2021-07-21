@@ -2,6 +2,7 @@
 #ifndef VOPCODE_HEADER_HPP
 #define VOPCODE_HEADER_HPP
 
+#include <random>
 #include <string>
 
 #include "bytecode/instruction.hpp"
@@ -15,7 +16,7 @@ public:
 
 class vmutator_t {
 public:
-	virtual vopcode_t* mutate() = 0;
+	virtual vopcode_t* mutate( std::default_random_engine& rand_engine ) = 0;
 	virtual ~vmutator_t() { };
 };
 

@@ -4,7 +4,6 @@
 
 #include <string>
 #include <random>
-#include <ctime>
 
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"
@@ -90,8 +89,8 @@ class vop_loadbool_b1_t : public vopcode_t {
 
 class vmut_loadbool_t : public vmutator_t {
 public:
-	vopcode_t* mutate() override {
-		switch ( std::default_random_engine( time( nullptr ) )() % 6 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
+		switch ( rand_engine() % 6 ) {
 			case 0: return new vop_loadbool_1_t();
 			case 1: return new vop_loadbool_2_t();
 			case 2: return new vop_loadbool_3_t();
