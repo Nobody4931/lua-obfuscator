@@ -1,6 +1,6 @@
 #pragma once
-#ifndef SETGLOBAL_HEADER_HPP
-#define SETGLOBAL_HEADER_HPP
+#ifndef OP_SETGLOBAL_HEADER_HPP
+#define OP_SETGLOBAL_HEADER_HPP
 
 #include <random>
 #include <string>
