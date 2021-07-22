@@ -45,7 +45,7 @@ public:
 	std::string string() override {
 		return "Stack[Instr[1]] = Stack[Instr[2]][Constants[Instr[3] - 256]]";
 	}
-}
+};
 
 class vop_gettable_c2_t : public vopcode_t {
 public:
@@ -56,7 +56,7 @@ public:
 	std::string string() override {
 		return "Stack[Instr[1]] = Stack[Instr[2]][Stack[Instr[3]]]";
 	}
-}
+};
 
 class vmut_gettable_t : public vmutator_t {
 public:
