@@ -20,10 +20,13 @@
 
 // because for some fucking reason i trusted the words of some random guy on discord
 static std::unique_ptr<vmutator_t> virtual_mutators[] {
-	std::make_unique< vmut_move_t >(),     /* OP_MOVE */
-	std::make_unique< vmut_loadk_t >(),    /* OP_LOADK */
-	std::make_unique< vmut_loadbool_t >(), /* OP_LOADBOOL */
-	std::make_unique< vmut_loadnil_t >(),  /* OP_LOADNIL */
+	std::make_unique< vmut_move_t >(),      /* OP_MOVE */
+	std::make_unique< vmut_loadk_t >(),     /* OP_LOADK */
+	std::make_unique< vmut_loadbool_t >(),  /* OP_LOADBOOL */
+	std::make_unique< vmut_loadnil_t >(),   /* OP_LOADNIL */
+	std::make_unique< vmut_getupval_t >(),  /* OP_GETUPVAL */
+	std::make_unique< vmut_getglobal_t >(), /* OP_GETGLOBAL */
+	std::make_unique< vmut_gettable_t >(),  /* OP_GETTABLE */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
