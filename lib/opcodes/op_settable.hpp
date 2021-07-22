@@ -22,7 +22,7 @@ public:
 			return Constants[Field - 256], Self
 		end
 		KeyC, KeyB = KeyC(Instr[3], KeyC)
-		Stack[Instr[1]][ KeyB(Instr[2], 1) ] = KeyC)";
+		Stack[Instr[1]][ KeyB(Instr[2], Instr[3]) ] = KeyC)";
 	}
 };
 
