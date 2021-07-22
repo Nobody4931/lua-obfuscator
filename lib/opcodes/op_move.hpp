@@ -2,8 +2,8 @@
 #ifndef OP_MOVE_HEADER_HPP
 #define OP_MOVE_HEADER_HPP
 
-#include <string>
 #include <random>
+#include <string>
 
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"

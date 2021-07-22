@@ -2,8 +2,8 @@
 #ifndef OP_GETUPVAL_HEADER_HPP
 #define OP_GETUPVAL_HEADER_HPP
 
-#include <string>
 #include <random>
+#include <string>
 
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"
