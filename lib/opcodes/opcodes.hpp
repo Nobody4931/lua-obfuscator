@@ -9,5 +9,8 @@
 #include "opcodes/op_getupval.hpp"
 #include "opcodes/op_getglobal.hpp"
 #include "opcodes/op_gettable.hpp"
+#include "opcodes/op_setglobal.hpp"
+#include "opcodes/op_setupval.hpp"
+#include "opcodes/op_settable.hpp"
 
 #endif

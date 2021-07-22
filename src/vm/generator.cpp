@@ -27,6 +27,9 @@ static std::unique_ptr<vmutator_t> virtual_mutators[] {
 	std::make_unique< vmut_getupval_t >(),  /* OP_GETUPVAL */
 	std::make_unique< vmut_getglobal_t >(), /* OP_GETGLOBAL */
 	std::make_unique< vmut_gettable_t >(),  /* OP_GETTABLE */
+	std::make_unique< vmut_setglobal_t >(), /* OP_SETGLOBAL */
+	std::make_unique< vmut_setupval_t >(),  /* OP_SETUPVAL */
+	std::make_unique< vmut_settable_t >(),  /* OP_SETTABLE */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
