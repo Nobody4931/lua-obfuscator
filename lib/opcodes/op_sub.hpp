@@ -16,7 +16,7 @@ public:
 
 	std::string string() override {
 		return R"(local KeyB, KeyC = function(Self, Field)
-			return Self, Instr[Field] <= 255 and Stack[Instr[Field]] or Constants[Instr[Field] - 256]
+			return Self, Instr[Field] >= 256 and Constants[Instr[Field] - 256] or Stack[Instr[Field]]
 		end
 		KeyB, KeyC = KeyB(KeyB, 3)
 		Stack[Instr[1]] = KeyB(3, 2) * -1 + KeyC
