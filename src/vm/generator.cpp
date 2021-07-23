@@ -89,6 +89,8 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 	for ( uint8_t i = 0; i < 38; ++i ) {
 		uint8_t gen_cnt = 3 + rand_engine() % 3; // [3, 5]
 		for ( uint8_t j = 0; j < gen_cnt; ++j ) {
+			// TODO: make sure at least one base case mutation is used each time
+			// else some opcodes wont fuckin work
 			context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
 				unique_byte( used_bytes, rand_engine ),
 				virtual_mutators[ i ]->mutate( rand_engine )
