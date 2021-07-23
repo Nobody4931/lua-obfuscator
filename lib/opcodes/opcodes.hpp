@@ -20,5 +20,7 @@
 #include "opcodes/op_div.hpp"
 #include "opcodes/op_mod.hpp"
 #include "opcodes/op_pow.hpp"
+#include "opcodes/op_unm.hpp"
+#include "opcodes/op_not.hpp"
 
 #endif
