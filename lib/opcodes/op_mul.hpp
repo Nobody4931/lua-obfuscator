@@ -19,7 +19,8 @@ public:
 			return Self, Instr[Field] > 255 and Constants[Instr[Field] - 256] or Stack[Instr[Field]]
 		end
 		KeyB, KeyC = KeyB(KeyB, 3)
-		Stack[Instr[1]] = KeyC * KeyB(1, 2))";
+		Stack[Instr[1]] = Select(2, KeyB(2, 2)) - KeyC
+		Stack[Instr[1]] = KeyC * (1 + Stack[Instr[1]]))";
 	}
 };
 
