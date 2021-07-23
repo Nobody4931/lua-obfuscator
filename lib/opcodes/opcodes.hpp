@@ -13,5 +13,6 @@
 #include "opcodes/op_setupval.hpp"
 #include "opcodes/op_settable.hpp"
 #include "opcodes/op_newtable.hpp"
+#include "opcodes/op_self.hpp"
 
 #endif
