@@ -14,5 +14,11 @@
 #include "opcodes/op_settable.hpp"
 #include "opcodes/op_newtable.hpp"
 #include "opcodes/op_self.hpp"
+#include "opcodes/op_add.hpp"
+#include "opcodes/op_sub.hpp"
+#include "opcodes/op_mul.hpp"
+#include "opcodes/op_div.hpp"
+#include "opcodes/op_mod.hpp"
+#include "opcodes/op_pow.hpp"
 
 #endif

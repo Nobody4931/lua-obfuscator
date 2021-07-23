@@ -32,6 +32,12 @@ static std::unique_ptr<vmutator_t> virtual_mutators[] {
 	std::make_unique< vmut_settable_t >(),  /* OP_SETTABLE */
 	std::make_unique< vmut_newtable_t >(),  /* OP_NEWTABLE */
 	std::make_unique< vmut_self_t >(),      /* OP_SELF */
+	std::make_unique< vmut_add_t >(),       /* OP_ADD */
+	std::make_unique< vmut_sub_t >(),       /* OP_SUB */
+	std::make_unique< vmut_mul_t >(),       /* OP_MUL */
+	std::make_unique< vmut_div_t >(),       /* OP_DIV */
+	std::make_unique< vmut_mod_t >(),       /* OP_MOD */
+	std::make_unique< vmut_pow_t >(),       /* OP_POW */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
