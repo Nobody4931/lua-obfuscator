@@ -23,6 +23,7 @@ public:
 };
 
 class vop_loadbool_2_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL;
 	}
@@ -34,6 +35,7 @@ class vop_loadbool_2_t : public vopcode_t {
 };
 
 class vop_loadbool_3_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL;
 	}
@@ -49,6 +51,7 @@ class vop_loadbool_3_t : public vopcode_t {
 };
 
 class vop_loadbool_c1_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.c == 0;
 	}
@@ -63,6 +66,7 @@ class vop_loadbool_c1_t : public vopcode_t {
 };
 
 class vop_loadbool_c2_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.c != 0;
 	}
@@ -74,6 +78,7 @@ class vop_loadbool_c2_t : public vopcode_t {
 };
 
 class vop_loadbool_b1_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADBOOL && instruction.b != 0;
 	}

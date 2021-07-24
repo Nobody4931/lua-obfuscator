@@ -9,6 +9,7 @@
 #include "opcodes/vopcode.hpp"
 
 class vop_len_t : public vopcode_t {
+public:
 	bool valid( instruction_t &instruction ) override {
 		return instruction.opcode == OP_LEN;
 	}

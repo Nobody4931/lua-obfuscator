@@ -9,6 +9,7 @@
 #include "opcodes/vopcode.hpp"
 
 class vop_loadnil_1_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADNIL;
 	}
@@ -21,6 +22,7 @@ class vop_loadnil_1_t : public vopcode_t {
 };
 
 class vop_loadnil_2_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADNIL;
 	}
@@ -35,6 +37,7 @@ class vop_loadnil_2_t : public vopcode_t {
 };
 
 class vop_loadnil_3_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADNIL;
 	}
@@ -49,6 +52,7 @@ class vop_loadnil_3_t : public vopcode_t {
 };
 
 class vop_loadnil_ab_1_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADNIL && instruction.a == instruction.b;
 	}
@@ -59,6 +63,7 @@ class vop_loadnil_ab_1_t : public vopcode_t {
 };
 
 class vop_loadnil_ab_2_t : public vopcode_t {
+public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_LOADNIL && instruction.a == instruction.b;
 	}

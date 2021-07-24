@@ -9,6 +9,7 @@
 #include "opcodes/vopcode.hpp"
 
 class vop_concat_t : public vopcode_t {
+public:
 	bool valid( instruction_t &instruction ) override {
 		return instruction.opcode == OP_CONCAT;
 	}
@@ -24,6 +25,7 @@ class vop_concat_t : public vopcode_t {
 };
 
 class vmut_concat_t : public vmutator_t {
+public:
 	vopcode_t* mutate( std::default_random_engine &rand_engine ) override {
 		return new vop_concat_t();
 	}
