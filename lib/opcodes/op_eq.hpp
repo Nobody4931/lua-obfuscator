@@ -1,3 +1,4 @@
+// TODO: create op_lt and op_le using this
 #pragma once
 #ifndef OP_EQ_HEADER_HPP
 #define OP_EQ_HEADER_HPP
