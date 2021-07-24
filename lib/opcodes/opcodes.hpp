@@ -22,5 +22,7 @@
 #include "opcodes/op_pow.hpp"
 #include "opcodes/op_unm.hpp"
 #include "opcodes/op_not.hpp"
+#include "opcodes/op_len.hpp"
+#include "opcodes/op_concat.hpp"
 
 #endif
