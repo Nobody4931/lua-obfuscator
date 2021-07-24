@@ -10,7 +10,7 @@
 
 class vop_concat_t : public vopcode_t {
 public:
-	bool valid( instruction_t &instruction ) override {
+	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_CONCAT;
 	}
 
