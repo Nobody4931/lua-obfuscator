@@ -25,5 +25,8 @@
 #include "opcodes/op_len.hpp"
 #include "opcodes/op_concat.hpp"
 #include "opcodes/op_jmp.hpp"
+#include "opcodes/op_eq.hpp"
+#include "opcodes/op_lt.hpp"
+#include "opcodes/op_le.hpp"
 
 #endif

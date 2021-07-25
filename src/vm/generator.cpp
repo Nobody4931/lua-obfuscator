@@ -43,6 +43,9 @@ static std::unique_ptr<vmutator_t> virtual_mutators[] {
 	std::make_unique< vmut_len_t >(),       /* OP_LEN */
 	std::make_unique< vmut_concat_t >(),    /* OP_CONCAT */
 	std::make_unique< vmut_jmp_t >(),       /* OP_JMP */
+	std::make_unique< vmut_eq_t >(),        /* OP_EQ */
+	std::make_unique< vmut_lt_t >(),        /* OP_LT */
+	std::make_unique< vmut_le_t >(),        /* OP_LE */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
