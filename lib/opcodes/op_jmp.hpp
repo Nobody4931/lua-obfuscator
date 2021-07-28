@@ -8,7 +8,7 @@
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"
 
-class vop_jmp_t : public vopcode_t {
+class vop_jmp_1_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_JMP;
@@ -19,10 +19,26 @@ public:
 	}
 };
 
+class vop_jmp_2_t : public vopcode_t {
+public:
+	bool valid( instruction_t& instruction ) override {
+		return instruction.opcode == OP_JMP;
+	}
+
+	std::string string() override {
+		return "InstrPtr = Instr[2] + InstrPtr";
+	}
+};
+
 class vmut_jmp_t : public vmutator_t {
 public:
 	vopcode_t* mutate( std::default_random_engine &rand_engine ) override {
-		return new vop_jmp_t();
+		switch ( rand_engine() % 2 ) {
+			case 0: return new vop_jmp_1_t();
+			case 1: return new vop_jmp_2_t();
+		}
+
+		return nullptr;
 	}
 };
 
