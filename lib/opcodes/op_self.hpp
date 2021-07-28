@@ -37,7 +37,8 @@ public:
 class vop_self_c1_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_SELF && instruction.c <= 255;
+		return instruction.opcode == OP_SELF &&
+			instruction.c <= 255;
 	}
 
 	std::string string() override {
@@ -49,7 +50,8 @@ public:
 class vop_self_c2_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_SELF && instruction.c > 255;
+		return instruction.opcode == OP_SELF &&
+			instruction.c > 255;
 	}
 
 	std::string string() override {

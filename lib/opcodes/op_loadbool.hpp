@@ -30,67 +30,64 @@ public:
 
 	std::string string() override {
 		return R"(Stack[Instr[1]] = not (Instr[2] == 0)
-		InstrPtr = Instr[3] == 0 and InstrPtr or InstrPtr + 1)";
+		InstrPtr = Instr[3] == 0 and InstrPtr or 1 + InstrPtr)";
 	}
 };
 
-class vop_loadbool_3_t : public vopcode_t {
+class vop_loadbool_bc_1_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADBOOL;
+		return instruction.opcode == OP_LOADBOOL &&
+			instruction.b != 0 &&
+			instruction.c != 0;
 	}
 
 	std::string string() override {
-		return R"(if Instr[2] == 0 then
-			Stack[Instr[1]] = false
-		else
-			Stack[Instr[1]] = true
-		end
-		InstrPtr = InstrPtr + (Instr[3] ~= 0 and 1 or 0))";
-	}
-};
-
-class vop_loadbool_c1_t : public vopcode_t {
-public:
-	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADBOOL && instruction.c == 0;
-	}
-
-	std::string string() override {
-		return R"(if Instr[2] ~= 0 then
-			Stack[Instr[1]] = true
-		else
-			Stack[Instr[1]] = false
-		end)";
-	}
-};
-
-class vop_loadbool_c2_t : public vopcode_t {
-public:
-	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADBOOL && instruction.c != 0;
-	}
-
-	std::string string() override {
-		return R"(Stack[Instr[1]] = not not (Instr[2] ~= 0)
+		return R"(Stack[Instr[1]] = true
 		InstrPtr = InstrPtr + 1)";
 	}
 };
 
-class vop_loadbool_b1_t : public vopcode_t {
+class vop_loadbool_bc_2_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADBOOL && instruction.b != 0;
+		return instruction.opcode == OP_LOADBOOL &&
+			instruction.b == 0 &&
+			instruction.c != 0;
 	}
 
 	std::string string() override {
-		return R"(Stack[Instr[1]] = not nil
-		while Instr[3] ~= 0 do
-			InstrPtr = InstrPtr + 1
-			break
-		end)";
+		return R"(Stack[Instr[1]] = false
+		InstrPtr = 1 + InstrPtr)";
 	}
 };
+
+class vop_loadbool_bc_3_t : public vopcode_t {
+public:
+	bool valid( instruction_t& instruction ) override {
+		return instruction.opcode == OP_LOADBOOL &&
+			instruction.b != 0 &&
+			instruction.c == 0;
+	}
+
+	std::string string() override {
+		return R"(Stack[Instr[1]] = not nil)";
+	}
+};
+
+class vop_loadbool_bc_4_t : public vopcode_t {
+public:
+	bool valid( instruction_t& instruction ) override {
+		return instruction.opcode == OP_LOADBOOL &&
+			instruction.b == 0 &&
+			instruction.c == 0;
+	}
+
+	std::string string() override {
+		return R"(Stack[Instr[1]] = not true)";
+	}
+};
+
 
 class vmut_loadbool_t : public vmutator_t {
 public:
@@ -98,10 +95,10 @@ public:
 		switch ( rand_engine() % 6 ) {
 			case 0: return new vop_loadbool_1_t();
 			case 1: return new vop_loadbool_2_t();
-			case 2: return new vop_loadbool_3_t();
-			case 3: return new vop_loadbool_c1_t();
-			case 4: return new vop_loadbool_c2_t();
-			case 5: return new vop_loadbool_b1_t();
+			case 2: return new vop_loadbool_bc_1_t();
+			case 3: return new vop_loadbool_bc_2_t();
+			case 4: return new vop_loadbool_bc_3_t();
+			case 5: return new vop_loadbool_bc_4_t();
 		}
 
 		return nullptr;

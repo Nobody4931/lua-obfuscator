@@ -54,7 +54,8 @@ public:
 class vop_loadnil_ab_1_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADNIL && instruction.a == instruction.b;
+		return instruction.opcode == OP_LOADNIL &&
+			instruction.a == instruction.b;
 	}
 
 	std::string string() override {
@@ -65,7 +66,8 @@ public:
 class vop_loadnil_ab_2_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
-		return instruction.opcode == OP_LOADNIL && instruction.a == instruction.b;
+		return instruction.opcode == OP_LOADNIL &&
+			instruction.a == instruction.b;
 	}
 
 	std::string string() override {
