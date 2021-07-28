@@ -1,9 +1,9 @@
 # build files
-bin/
-compile_commands.json
+/bin/**
+/compile_commands.json
 
 # testing files
-test/
+/test/**
 
 # no clue what this is
-.cache/
+/.cache/**
