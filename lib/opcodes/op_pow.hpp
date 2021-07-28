@@ -8,18 +8,38 @@
 #include "bytecode/instruction.hpp"
 #include "opcodes/vopcode.hpp"
 
-class vop_pow_t : public vopcode_t {
+class vop_pow_1_t : public vopcode_t {
 public:
 	bool valid( instruction_t& instruction ) override {
 		return instruction.opcode == OP_POW;
 	}
 
 	std::string string() override {
-		return R"(local KeyB, KeyC = function(Self, Field)
-			return Self, not (Instr[Field] > 255) and Stack[Instr[Field]] or Constants[Instr[Field] - 256]
-		end
-		KeyB, KeyC = KeyB(KeyB, 3)
-		Stack[Instr[1]] = Select(2, KeyB(3, 2)) ^ KeyC)";
+		return R"(local KeyB, KeyC = (function(...)
+			local Keys = {...}
+			for Idx = 1, #Keys do
+				if Instr[Keys[Idx]] < 256 then
+					Keys[Idx] = Stack[ Instr[Keys[Idx]] ]
+				else
+					Keys[Idx] = Constants[ Instr[Keys[Idx]] - 256 ]
+				end
+			end
+			return Unpack(Keys)
+		end)(2, 3)
+		Stack[Instr[1]] = KeyB ^ KeyC)";
+	}
+};
+
+class vop_pow_2_t : public vopcode_t {
+public:
+	bool valid( instruction_t& instruction ) override {
+		return instruction.opcode == OP_POW;
+	}
+
+	std::string string() override {
+		return R"(Stack[Instr[1]] =
+			( Instr[2] >= 256 and Constants[Instr[2] - 256] or Stack[Instr[2]] ) ^
+			( Instr[3] > 255 and Constants[Instr[3] - 256] or Stack[Instr[3]] ))";
 	}
 };
 
@@ -78,12 +98,13 @@ public:
 class vmut_pow_t : public vmutator_t {
 public:
 	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 5 ) {
-			case 0: return new vop_pow_t();
-			case 1: return new vop_pow_bc_1_t();
-			case 2: return new vop_pow_bc_2_t();
-			case 3: return new vop_pow_bc_3_t();
-			case 4: return new vop_pow_bc_4_t();
+		switch ( rand_engine() % 6 ) {
+			case 0: return new vop_pow_1_t();
+			case 1: return new vop_pow_2_t();
+			case 2: return new vop_pow_bc_1_t();
+			case 3: return new vop_pow_bc_2_t();
+			case 4: return new vop_pow_bc_3_t();
+			case 5: return new vop_pow_bc_4_t();
 		}
 
 		return nullptr;
