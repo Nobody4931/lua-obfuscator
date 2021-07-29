@@ -28,5 +28,7 @@
 #include "opcodes/op_eq.hpp"
 #include "opcodes/op_lt.hpp"
 #include "opcodes/op_le.hpp"
+#include "opcodes/op_test.hpp"
+#include "opcodes/op_testset.hpp"
 
 #endif
