@@ -2,15 +2,15 @@
 some lua 5.1 vm based obfuscator thing
 
 ## todo
-* ~~shuffle constants~~
-* ~~shuffle prototypes~~
-* ~~update registers (instruction fields)~~
-* create virtual machine opcodes
-* generate virtual machine
-	* serialize bytecode
-	* apply vm template scripts
-	* generate opcode mutations
-	* generate opcode handlers
+- [x] shuffle constants
+- [x] shuffle prototypes
+- [x] update registers (instruction fields)
+- [ ] create virtual machine opcodes
+- [ ] generate virtual machine
+	- [ ] serialize bytecode
+	- [ ] apply vm template scripts
+	- [ ] generate opcode mutations
+	- [ ] generate opcode handlers
 
 ## not faq
 
@@ -18,7 +18,7 @@ some lua 5.1 vm based obfuscator thing
 read the code lazyass
 
 ### isnt the luac interpreter stolen from your other repo
-its mine anyways screw off
+its mine anyways so screw off
 
 ### arent there plenty of much better free alternatives for obfuscating lua out there
 yes
