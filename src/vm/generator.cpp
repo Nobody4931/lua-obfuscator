@@ -48,6 +48,8 @@ static std::unique_ptr<vmutator_t> virtual_mutators[] {
 	std::make_unique< vmut_le_t >(),        /* OP_LE */
 	std::make_unique< vmut_test_t >(),      /* OP_TEST */
 	std::make_unique< vmut_testset_t >(),   /* OP_TESTSET */
+	std::make_unique< vmut_call_t >(),      /* OP_CALL */
+	std::make_unique< vmut_tailcall_t >(),  /* OP_TAILCALL */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
