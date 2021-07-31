@@ -4,6 +4,8 @@
 
 # testing files
 /test/**
+!/test/*.lua
+/test/*.obf.lua
 
 # no clue what this is
 /.cache/**
