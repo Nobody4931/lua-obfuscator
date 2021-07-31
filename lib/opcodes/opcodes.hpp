@@ -32,5 +32,6 @@
 #include "opcodes/op_testset.hpp"
 #include "opcodes/op_call.hpp"
 #include "opcodes/op_tailcall.hpp"
+#include "opcodes/op_return.hpp"
 
 #endif
