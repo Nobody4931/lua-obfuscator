@@ -211,8 +211,12 @@ int main( int argc, char** argv ) {
 	std::string obfuscated;
 	generate_vm( tl_chunk, obfuscated );
 
+	std::cout << "Writing to file...\n\n";
+
 	outfile.write( obfuscated.c_str(), obfuscated.size() );
 	outfile.flush();
+
+	std::cout << "Obfuscation finished in ... ms" << std::endl;
 
 	outfile.close();
 }
