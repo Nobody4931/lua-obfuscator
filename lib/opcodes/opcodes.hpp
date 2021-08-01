@@ -33,5 +33,8 @@
 #include "opcodes/op_call.hpp"
 #include "opcodes/op_tailcall.hpp"
 #include "opcodes/op_return.hpp"
+#include "opcodes/op_forloop.hpp"
+#include "opcodes/op_forprep.hpp"
+#include "opcodes/op_tforloop.hpp"
 
 #endif
