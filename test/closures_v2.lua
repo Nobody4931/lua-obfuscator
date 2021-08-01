@@ -1,0 +1,4 @@
+-- TODO: make closure test
+	--> use specific return values
+	--> use multiple return values
+	--> use unknown parameter counts
