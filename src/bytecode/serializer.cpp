@@ -75,6 +75,7 @@ static inline void serialize_constant( obfuscation_context_t& context, constant_
 	}
 }
 
+// TODO: serialize upvalue count bc op_closure uses it lol
 void serialize_chunk( obfuscation_context_t& context, chunk_t& chunk, bool little_endian ) {
 	for ( uint8_t i = 0; i < 4; ++i ) {
 		switch ( context.chunk_order[i] ) {
