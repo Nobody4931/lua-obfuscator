@@ -41,9 +41,9 @@
 #include "bytecode/constant.hpp"
 #include "bytecode/instruction.hpp"
 #include "bytecode/serializer.hpp"
-#include "vm/generator.hpp"
 #include "opcodes/vopcode.hpp"
 #include "opcodes/opcodes.hpp"
+#include "vm/generator.hpp"
 
 // TODO: create rest of the opcodes
 
