@@ -1,3 +1,32 @@
+// OBFUSCATOR VARIABLES
+
+// IsMoveOp() : Checks if an instruction corresponds to a MOVE operation
+// IsGetupvalOp() : Checks if an instruction corresponds to a GETUPVAL operation
+
+// Upvalues[] : The upvalues
+// Env{} : The environment
+// Stack[] : The stack
+// Constants[] : The constant list
+// Instrs[] : The instruction list
+//	- Instr[] : An individual instruction
+//		- 1 : Field A
+//		- 2 : Field B
+//		- 3 : Field C
+//		- 4 : Opcode enum
+//		- 5 : Entire data of instruction
+// Protos[] : The function prototypes list
+//	- Proto[] : A binary chunk
+//		- 1 : Parameter count
+//		- 2 : Upvalue count
+//		- 3 : Instructions
+//		- 4 : Constants
+//		- 5 : Prototypes
+// LUpvalues[] : The list of a list of locals used as upvalues
+//	- Locals[] : The list of locals used as upvalues
+//		- LUpvalue[] : An individual local upvalue
+//			- 1 : The memory where this local upvalue is stored
+//			- 2 : The register index in which this local upvalue is stored
+
 #include <algorithm>
 #include <utility>
 #include <memory>
