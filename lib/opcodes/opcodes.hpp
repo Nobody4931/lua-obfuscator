@@ -37,5 +37,7 @@
 #include "opcodes/op_forprep.hpp"
 #include "opcodes/op_tforloop.hpp"
 #include "opcodes/op_setlist.hpp"
+#include "opcodes/op_close.hpp"
+#include "opcodes/op_closure.hpp"
 
 #endif
