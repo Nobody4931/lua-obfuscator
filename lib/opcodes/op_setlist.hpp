@@ -19,7 +19,7 @@ public:
 		if Instr[3] ~= 0 then
 			BlkIdx = Instr[3]
 		else
-			BlkIdx = Instrs[InstrPtr][4]
+			BlkIdx = Instrs[InstrPtr][5]
 			InstrPtr = InstrPtr + 1
 		end
 
@@ -39,7 +39,7 @@ public:
 	}
 
 	std::string string() override {
-		return R"(local A, BlkIdx = Instr[1], 50 * (Instrs[InstrPtr][4] + -1)
+		return R"(local A, BlkIdx = Instr[1], 50 * (Instrs[InstrPtr][5] + -1)
 		for Offset = 1, #Stack + -A do
 			Stack[A][Offset + BlkIdx] = Stack[Offset + A]
 		end
@@ -56,7 +56,7 @@ public:
 	}
 
 	std::string string() override {
-		return R"(local BlkIdx, B, A = Instrs[InstrPtr][4] * 50 + -50, Instr[2], Instr[1]
+		return R"(local BlkIdx, B, A = Instrs[InstrPtr][5] * 50 + -50, Instr[2], Instr[1]
 		InstrPtr = InstrPtr - -1
 		for Offset = 1, Instr[2] do
 			Stack[A][BlkIdx + Offset] = Stack[Offset + A]
