@@ -41,6 +41,7 @@ struct obfuscation_context_t {
 	uint8_t chunk_xor_key;
 	uint8_t instr_xor_key;
 	uint8_t const_xor_key;
+	uint8_t water_xor_key;
 };
 
 void generate_vm( chunk_t& chunk, std::string& out );

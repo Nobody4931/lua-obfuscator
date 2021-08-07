@@ -32,6 +32,7 @@
 #include <memory>
 #include <random>
 #include <ctime>
+#include <cstring>
 #include <string>
 #include <vector>
 #include <set>
@@ -44,6 +45,9 @@
 #include "opcodes/vopcode.hpp"
 #include "opcodes/opcodes.hpp"
 #include "vm/generator.hpp"
+
+#define OBF_NAME "Nobody's Lua Obfuscator"
+#define OBF_VERS "v1.0.0a"
 
 // TODO: create rest of the opcodes
 
@@ -101,6 +105,7 @@ static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_
 void generate_vm( chunk_t& chunk, std::string& out ) {
 	std::default_random_engine rand_engine( time( nullptr ) );
 
+	// Shuffle obfuscation order
 	chunk_order_t chunk_order[5] {
 		chunk_order_t::ORD_PARAM_CNT,
 		chunk_order_t::ORD_UPVAL_CNT,
@@ -118,6 +123,19 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 	std::shuffle( chunk_order, chunk_order + 5, rand_engine );
 	std::shuffle( instr_order, instr_order + 3, rand_engine );
 
+	// Generate watermark xor key
+	const char* watermark = "Obfuscated using " OBF_NAME " " OBF_VERS " / Contact: @Nobody#4931 via Discord";
+	const size_t watermark_len = std::strlen( watermark );
+
+	uint16_t watermark_key = 0;
+	for ( size_t i = 0; i < watermark_len; ++i ) {
+		watermark_key = ( watermark_key + watermark[ i ] * 227 + 83 ) % 479;
+		for ( size_t j = 0; j + 1 < watermark_len; j += 3 ) {
+			watermark_key ^= *reinterpret_cast<const uint16_t*>( watermark + j );
+		}
+	}
+
+	// Obfuscation context
 	obfuscation_context_t context {
 		.bytecode = std::vector<uint8_t>(),
 
@@ -132,11 +150,14 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		.upval_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.chunk_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.instr_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
-		.const_xor_key = static_cast<uint8_t>( rand_engine() % 256 )
+		.const_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
+		.water_xor_key = static_cast<uint8_t>( watermark_key % 256 )
 	};
+
 
 	std::set<uint8_t> used_bytes;
 
+	// Generate constant mappings
 	context.const_map[ const_t::K_NIL ] = unique_byte( used_bytes, rand_engine );
 	context.const_map[ const_t::K_BOOLEAN ] = unique_byte( used_bytes, rand_engine );
 	context.const_map[ const_t::K_NUMBER ] = unique_byte( used_bytes, rand_engine );
@@ -144,12 +165,14 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 	used_bytes.clear();
 
+	// Generate instruction type mappings
 	context.enum_map[ instr_t::i_ABC ] = unique_byte( used_bytes, rand_engine );
 	context.enum_map[ instr_t::i_ABx ] = unique_byte( used_bytes, rand_engine );
 	context.enum_map[ instr_t::i_AsBx ] = unique_byte( used_bytes, rand_engine );
 
 	used_bytes.clear();
 
+	// Generate opcode mutations
 	for ( uint8_t i = 0; i < 38; ++i ) {
 		// probably not the best way to do this but i changed my mind last minute so fuck off
 		context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
@@ -165,6 +188,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 			} );
 		}
 	}
+
 
 	serialize_chunk( context, chunk );
 }
