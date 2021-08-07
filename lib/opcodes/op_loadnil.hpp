@@ -77,8 +77,8 @@ public:
 
 class vmut_loadnil_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 5 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
+		switch ( rand_engine() % ( base_case ? 3 : 5 ) ) {
 			case 0: return new vop_loadnil_1_t();
 			case 1: return new vop_loadnil_2_t();
 			case 2: return new vop_loadnil_3_t();

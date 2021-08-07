@@ -99,8 +99,8 @@ public:
 
 class vmut_setlist_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 5 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
+		switch ( rand_engine() % ( base_case ? 1 : 5 ) ) {
 			case 0: return new vop_setlist_t();
 			case 1: return new vop_setlist_bc_1_t();
 			case 2: return new vop_setlist_bc_2_t();

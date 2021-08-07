@@ -21,7 +21,7 @@ public:
 
 class vmut_len_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
 		return new vop_len_t();
 	}
 };

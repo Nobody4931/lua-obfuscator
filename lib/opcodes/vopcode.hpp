@@ -16,7 +16,7 @@ public:
 
 class vmutator_t {
 public:
-	virtual vopcode_t* mutate( std::default_random_engine& rand_engine ) = 0;
+	virtual vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case = false ) = 0;
 	virtual ~vmutator_t() { };
 };
 

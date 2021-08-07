@@ -93,8 +93,8 @@ public:
 
 class vmut_mod_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 6 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
+		switch ( rand_engine() % ( base_case ? 2 : 6 ) ) {
 			case 0: return new vop_mod_1_t();
 			case 1: return new vop_mod_2_t();
 			case 2: return new vop_mod_bc_1_t();

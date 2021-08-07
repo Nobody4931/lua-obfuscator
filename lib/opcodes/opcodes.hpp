@@ -39,5 +39,6 @@
 #include "opcodes/op_setlist.hpp"
 #include "opcodes/op_close.hpp"
 #include "opcodes/op_closure.hpp"
+#include "opcodes/op_vararg.hpp"
 
 #endif

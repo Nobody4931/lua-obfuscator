@@ -13,10 +13,11 @@
 #include "opcodes/vopcode.hpp"
 
 enum class chunk_order_t : uint8_t {
-	ORD_PARAM_CNT    = 0, // i think this is needed?
-	ORD_INSTRUCTIONS = 1,
-	ORD_CONSTANTS    = 2,
-	ORD_PROTOTYPES   = 3
+	ORD_PARAM_CNT    = 0,
+	ORD_UPVAL_CNT    = 1,
+	ORD_INSTRUCTIONS = 2,
+	ORD_CONSTANTS    = 3,
+	ORD_PROTOTYPES   = 4
 };
 
 enum class instr_order_t : uint8_t {
@@ -32,6 +33,7 @@ struct obfuscation_context_t {
 	instr_order_t* instr_order;
 
 	std::map<const_t, uint8_t> const_map;
+	std::map<instr_t, uint8_t> enum_map;
 	std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>> opcode_map;
 
 	uint8_t param_xor_key;

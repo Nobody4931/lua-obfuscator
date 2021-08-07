@@ -65,8 +65,8 @@ public:
 
 class vmut_self_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 4 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
+		switch ( rand_engine() % ( base_case ? 2 : 4 ) ) {
 			case 0: return new vop_self_1_t();
 			case 1: return new vop_self_2_t();
 			case 2: return new vop_self_c1_t();

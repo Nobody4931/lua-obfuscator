@@ -187,8 +187,8 @@ public:
 
 class vmut_call_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine& rand_engine ) override {
-		switch ( rand_engine() % 2 ) {
+	vopcode_t* mutate( std::default_random_engine& rand_engine, bool base_case ) override {
+		switch ( rand_engine() % ( base_case ? 2 : 11 ) ) {
 			case 0:  return new vop_call_1_t();
 			case 1:  return new vop_call_2_t();
 			case 2:  return new vop_call_bc_1_t();

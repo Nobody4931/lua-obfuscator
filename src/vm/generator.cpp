@@ -86,6 +86,7 @@ static std::unique_ptr<vmutator_t> virtual_mutators[] {
 	std::make_unique< vmut_setlist_t >(),   /* OP_SETLIST */
 	std::make_unique< vmut_close_t >(),     /* OP_CLOSE */
 	std::make_unique< vmut_closure_t >(),   /* OP_CLOSURE */
+	std::make_unique< vmut_vararg_t >(),    /* OP_VARARG */
 };
 
 static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_engine& rand_engine ) {
@@ -100,8 +101,9 @@ static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_
 void generate_vm( chunk_t& chunk, std::string& out ) {
 	std::default_random_engine rand_engine( time( nullptr ) );
 
-	chunk_order_t chunk_order[4] {
+	chunk_order_t chunk_order[5] {
 		chunk_order_t::ORD_PARAM_CNT,
+		chunk_order_t::ORD_UPVAL_CNT,
 		chunk_order_t::ORD_INSTRUCTIONS,
 		chunk_order_t::ORD_CONSTANTS,
 		chunk_order_t::ORD_PROTOTYPES
@@ -113,7 +115,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		instr_order_t::ORD_FIELDS
 	};
 
-	std::shuffle( chunk_order, chunk_order + 4, rand_engine );
+	std::shuffle( chunk_order, chunk_order + 5, rand_engine );
 	std::shuffle( instr_order, instr_order + 3, rand_engine );
 
 	obfuscation_context_t context {
@@ -123,6 +125,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		.instr_order = instr_order,
 
 		.const_map = std::map<const_t, uint8_t>(),
+		.enum_map = std::map<instr_t, uint8_t>(),
 		.opcode_map = std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>>(),
 
 		.param_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
@@ -140,11 +143,21 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 	used_bytes.clear();
 
+	context.enum_map[ instr_t::i_ABC ] = unique_byte( used_bytes, rand_engine );
+	context.enum_map[ instr_t::i_ABx ] = unique_byte( used_bytes, rand_engine );
+	context.enum_map[ instr_t::i_AsBx ] = unique_byte( used_bytes, rand_engine );
+
+	used_bytes.clear();
+
 	for ( uint8_t i = 0; i < 38; ++i ) {
-		uint8_t gen_cnt = 3 + rand_engine() % 3; // [3, 5]
+		// probably not the best way to do this but i changed my mind last minute so fuck off
+		context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
+			unique_byte( used_bytes, rand_engine ),
+			virtual_mutators[ i ]->mutate( rand_engine, true )
+		} );
+
+		uint8_t gen_cnt = 2 + rand_engine() % 3; // [2, 4]
 		for ( uint8_t j = 0; j < gen_cnt; ++j ) {
-			// TODO: make sure at least one base case mutation is used each time
-			// else some opcodes wont fuckin work
 			context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
 				unique_byte( used_bytes, rand_engine ),
 				virtual_mutators[ i ]->mutate( rand_engine )
@@ -152,10 +165,5 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		}
 	}
 
-	serialize_chunk( context, chunk );
-
-	// TODO: remove testing code later
-	for ( uint8_t byte : context.bytecode )
-		std::cout << static_cast<uint16_t>( byte ) << ' ';
-	std::cout << '\n';
+	serialize_chunk( context, chunk ); // TODO: make shit xor
 }

@@ -32,7 +32,7 @@ public:
 
 class vmut_jmp_t : public vmutator_t {
 public:
-	vopcode_t* mutate( std::default_random_engine &rand_engine ) override {
+	vopcode_t* mutate( std::default_random_engine &rand_engine, bool base_case ) override {
 		switch ( rand_engine() % 2 ) {
 			case 0: return new vop_jmp_1_t();
 			case 1: return new vop_jmp_2_t();
