@@ -37,6 +37,7 @@ struct obfuscation_context_t {
 	std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>> opcode_map;
 
 	uint8_t param_xor_key;
+	uint8_t upval_xor_key;
 	uint8_t chunk_xor_key;
 	uint8_t instr_xor_key;
 	uint8_t const_xor_key;

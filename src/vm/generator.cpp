@@ -129,6 +129,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		.opcode_map = std::map<opcode_t, std::vector<std::pair<uint8_t, vopcode_t*>>>(),
 
 		.param_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
+		.upval_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.chunk_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.instr_xor_key = static_cast<uint8_t>( rand_engine() % 256 ),
 		.const_xor_key = static_cast<uint8_t>( rand_engine() % 256 )
@@ -165,5 +166,5 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		}
 	}
 
-	serialize_chunk( context, chunk ); // TODO: make shit xor
+	serialize_chunk( context, chunk );
 }
