@@ -15,10 +15,10 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 	for ( uint8_t i = 0; i < 3; ++i ) {
 		instr_t type = instruction_mappings[ instruction.opcode ];
 
-		// TODO: shove this index into the instruction somewhere so i know which mutations to leave out
 		uint8_t op_idx = rand_engine() % context.opcode_map[ instruction.opcode ].size();
 		while ( !context.opcode_map[ instruction.opcode ][ op_idx ].second->valid( instruction ) )
 			op_idx = ( op_idx + 1 ) % context.opcode_map[ instruction.opcode ].size();
+		instruction.mutation_idx = op_idx;
 
 		switch ( context.instr_order[i] ) {
 

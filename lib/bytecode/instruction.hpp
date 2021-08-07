@@ -61,6 +61,8 @@ struct instruction_t {
 	int32_t a;
 	int32_t b;
 	int32_t c;
+
+	uint8_t mutation_idx;
 };
 
 
