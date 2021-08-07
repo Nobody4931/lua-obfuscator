@@ -26,7 +26,7 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 				break;
 
 			case instr_order_t::ORD_ENUM:
-				write_byte( context.bytecode, type );
+				write_byte( context.bytecode, context.enum_map[ type ] );
 				break;
 
 			case instr_order_t::ORD_FIELDS: // always 5 bytes
