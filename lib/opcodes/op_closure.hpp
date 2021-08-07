@@ -41,7 +41,7 @@ public:
 			InstrPtr = InstrPtr + 1
 		end
 
-		Stack[Instr[1]] = Wrap(Proto, Env, PUpvalues)
+		Stack[Instr[1]] = Wrap(PUpvalues, Env, Proto)
 		LUpvalues[#LUpvalues + 1] = Locals)";
 	}
 };
@@ -86,7 +86,7 @@ public:
 		end
 
 		LUpvalues[#LUpvalues - -1] = Locals
-		Stack[Instr[1]] = Wrap(Proto, Env, PUpvalues))";
+		Stack[Instr[1]] = Wrap(PUpvalues, Env, Proto))";
 	}
 };
 
