@@ -4,7 +4,7 @@
 
 #include <cstdint>
 #include <utility>
-#include <string>
+#include <sstream>
 #include <vector>
 #include <map>
 
@@ -44,6 +44,6 @@ struct obfuscation_context_t {
 	uint8_t water_xor_key;
 };
 
-void generate_vm( chunk_t& chunk, std::string& out );
+void generate_vm( chunk_t& chunk, std::stringstream& out );
 
 #endif

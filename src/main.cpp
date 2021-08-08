@@ -1,8 +1,13 @@
+#ifndef WIN32_LEAN_AND_MEAN
+#	define WIN32_LEAN_AND_MEAN
+#endif
+
 #include <windows.h>
 #include <processthreadsapi.h>
 
 #include <iostream>
 #include <fstream>
+#include <sstream>
 #include <filesystem>
 
 #include "bytecode/deserializer.hpp"
@@ -208,10 +213,12 @@ int main( int argc, char** argv ) {
 
 	std::cout << "Obfuscating...\n\n";
 
-	std::string obfuscated;
-	generate_vm( tl_chunk, obfuscated );
+	std::stringstream obfuscated_stream;
+	generate_vm( tl_chunk, obfuscated_stream );
 
 	std::cout << "Writing to file...\n\n";
+
+	const std::string& obfuscated = obfuscated_stream.str();
 
 	outfile.write( obfuscated.c_str(), obfuscated.size() );
 	outfile.flush();
