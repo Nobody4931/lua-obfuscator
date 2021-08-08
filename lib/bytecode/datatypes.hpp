@@ -109,7 +109,7 @@ inline void write_double( std::vector<uint8_t>& buffer, double data, bool little
 	write_some( buffer, reinterpret_cast<uint8_t*>( &data ), 8, true, little_endian, xor_mask );
 }
 
-inline void write_string( std::vector<uint8_t>& buffer, l_string data, bool little_endian, uint8_t xor_mask = 0 ) {
+inline void write_string( std::vector<uint8_t>& buffer, const l_string& data, bool little_endian, uint8_t xor_mask = 0 ) {
 	write_int32( buffer, data.size, little_endian, xor_mask );
 	write_some( buffer, data.data, data.size, true, little_endian, xor_mask );
 	write_byte( buffer, 0, xor_mask );

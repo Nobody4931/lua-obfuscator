@@ -72,7 +72,8 @@ static inline void serialize_constant( obfuscation_context_t& context, constant_
 			break;
 
 		case const_t::K_STRING:
-			write_some( context.bytecode, constant.data, reinterpret_cast<l_string*>( constant.data )->size, true, little_endian, context.const_xor_key ^ context.water_xor_key );
+			// write_some( context.bytecode, constant.data, reinterpret_cast<l_string*>( constant.data )->size, true, little_endian, context.const_xor_key ^ context.water_xor_key );
+			write_string( context.bytecode, *reinterpret_cast<l_string*>( constant.data ), little_endian, context.const_xor_key ^ context.water_xor_key );
 			break;
 
 	}
