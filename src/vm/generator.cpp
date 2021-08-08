@@ -33,7 +33,8 @@
 #include <random>
 #include <ctime>
 #include <cstring>
-#include <string>
+#include <iostream>
+#include <sstream>
 #include <vector>
 #include <set>
 #include <map>
@@ -102,10 +103,10 @@ static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_
 	return byte;
 }
 
-void generate_vm( chunk_t& chunk, std::string& out ) {
+void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 	std::default_random_engine rand_engine( time( nullptr ) );
 
-	// Shuffle obfuscation order
+	// shuffle obfuscation order
 	chunk_order_t chunk_order[5] {
 		chunk_order_t::ORD_PARAM_CNT,
 		chunk_order_t::ORD_UPVAL_CNT,
@@ -123,7 +124,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 	std::shuffle( chunk_order, chunk_order + 5, rand_engine );
 	std::shuffle( instr_order, instr_order + 3, rand_engine );
 
-	// Generate watermark xor key
+	// generate watermark xor key
 	const char* watermark = "Obfuscated using " OBF_NAME " " OBF_VERS " / Contact: @Nobody#4931 via Discord";
 	const size_t watermark_len = std::strlen( watermark );
 
@@ -135,7 +136,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 		}
 	}
 
-	// Obfuscation context
+	// obfuscation context
 	obfuscation_context_t context {
 		.bytecode = std::vector<uint8_t>(),
 
@@ -157,7 +158,7 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 	std::set<uint8_t> used_bytes;
 
-	// Generate constant mappings
+	// generate constant mappings
 	context.const_map[ const_t::K_NIL ] = unique_byte( used_bytes, rand_engine );
 	context.const_map[ const_t::K_BOOLEAN ] = unique_byte( used_bytes, rand_engine );
 	context.const_map[ const_t::K_NUMBER ] = unique_byte( used_bytes, rand_engine );
@@ -165,14 +166,14 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 	used_bytes.clear();
 
-	// Generate instruction type mappings
+	// generate instruction type mappings
 	context.enum_map[ instr_t::i_ABC ] = unique_byte( used_bytes, rand_engine );
 	context.enum_map[ instr_t::i_ABx ] = unique_byte( used_bytes, rand_engine );
 	context.enum_map[ instr_t::i_AsBx ] = unique_byte( used_bytes, rand_engine );
 
 	used_bytes.clear();
 
-	// Generate opcode mutations
+	// generate opcode mutations
 	for ( uint8_t i = 0; i < 38; ++i ) {
 		// probably not the best way to do this but i changed my mind last minute so fuck off
 		context.opcode_map[ static_cast<opcode_t>( i ) ].push_back( {
@@ -191,4 +192,71 @@ void generate_vm( chunk_t& chunk, std::string& out ) {
 
 
 	serialize_chunk( context, chunk );
+
+	// write variables
+	out << "for _, Watermark in next, {\"" << watermark << "\"} do" R"(
+	local String = string
+	local Byte = String.byte
+	local Char = String.char
+
+	local Math = math
+	local Abs = Math.abs
+	local LDExp = Math.ldexp
+
+	local Table = table
+	local Insert = Table.insert
+
+	local Debug = debug
+	local GetInfo = Debug.getinfo
+
+	local Select = select
+	local Loadstring = loadstring
+	local Setmetatable = setmetatable
+	local GetFEnv = getfenv
+	local Unpack = unpack
+
+	local TMP1 = { 27, 76, 117, 97, 81, 0, 1, 4, 8, 4, 8, 0, 7, 0, 0, 0, 0, 0, 0, 0, 60, 101, 118, 97, 108, 62, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2, 3, 0, 0, 0, 1, 0, 0, 0, 30, 0, 0, 1, 30, 0, 128, 0, 1, 0, 0, 0, 4, 8, 0, 0, 0, 0, 0, 0, 0, 95, 95, 105, 110, 100, 101, 120, 0, 0, 0, 0, 0, 3, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }
+	local TMP2 = function()
+		local Result = ""
+		for Idx = 1, #TMP1 do
+			Result = Result .. Char(TMP1[Idx])
+		end
+		return Result
+	end
+
+	local __Func = Loadstring("\27\76\117\97\81\0\1\4\8\4\8\0\7\0\0\0\0\0\0\0\60\101\118\97\108\62\0\1\0\0\0\3\0\0\0\0\0\0\2\3\0\0\0\1\0\0\0\30\0\0\1\30\0\128\0\1\0\0\0\4\5\0\0\0\0\0\0\0\102\117\110\99\0\0\0\0\0\3\0\0\0\2\0\0\0\2\0\0\0\3\0\0\0\0\0\0\0\0\0\0\0")()
+	local __Index = Loadstring(TMP2())()
+
+	TMP1[61] = 11
+	for _, Idx in next, { 89, 28, 85, 93, 32 } do
+		TMP1[Idx] = 1 + TMP1[Idx]
+	end
+	Insert(TMP1, 71, 119)
+	Insert(TMP1, 71, 101)
+	Insert(TMP1, 71, 110)
+
+	local __NewIndex = Loadstring(TMP2())()
+	)";
+
+
+	// write and deserialize bytecode
+	// TODO: compressed bytecode bullshit
+
+	// TODO: make the deserialize call here using debug.getinfo().func
+	// TODO: and use the index as a parameter and return how many bytes were read from the func
+	out << R"(local TLChunk = (function(Bytecode)
+		return (function(ReadPos)
+
+		end)(1)
+	end))";
+
+	out << "(\"";
+	for ( uint8_t byte : context.bytecode ) {
+		out << '\\' << static_cast<uint16_t>( byte );
+	}
+	out << "\")\n";
+
+	// finish obfuscation
+	out << "return Wrap({}, GetFEnv(0), TLChunk)()\n";
+	out << "end";
 }
