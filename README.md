@@ -5,11 +5,11 @@ some lua 5.1 vm based obfuscator thing
 - [x] shuffle constants
 - [x] shuffle prototypes
 - [x] update registers (instruction fields)
-- [ ] create virtual machine opcodes
+- [x] create virtual machine opcodes
 - [ ] generate virtual machine
-	- [ ] serialize bytecode
+	- [x] serialize bytecode
 	- [ ] apply vm template scripts
-	- [ ] generate opcode mutations
+	- [x] generate opcode mutations
 	- [ ] generate opcode handlers
 
 ## not faq
