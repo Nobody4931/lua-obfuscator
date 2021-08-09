@@ -191,7 +191,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 	}
 
 
-	serialize_chunk( context, chunk );
+	serialize_chunk( context, chunk, true );
 
 	// write variables
 	out << "for _, Watermark in next, {\"" << watermark << "\"} do" R"(
@@ -201,6 +201,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 
 	local Math = math
 	local Abs = Math.abs
+	local Max = Math.max
 	local LDExp = Math.ldexp
 
 	local Table = table
@@ -236,20 +237,152 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 	Insert(TMP1, 71, 110)
 
 	local __NewIndex = Loadstring(TMP2())()
+
+	local BitXOR = function(a,b)
+		local p,c=1,0
+		while a>0 and b>0 do
+			local ra,rb=a%2,b%2
+			if ra~=rb then c=c+p end
+			a,b,p=(a-ra)/2,(b-rb)/2,p*2
+		end
+		if a<b then a=b end
+		while a>0 do
+			local ra=a%2
+			if ra>0 then c=c+p end
+			a,p=(a-ra)/2,p*2
+		end
+		return c
+	end
+
+	local BitOR = function(a,b)
+		local p,c=1,0
+		while a+b>0 do
+			local ra,rb=a%2,b%2
+			if ra+rb>0 then c=c+p end
+			a,b,p=(a-ra)/2,(b-rb)/2,p*2
+		end
+		return c
+	end
+
+	local BitNOT = function(n)
+		local p,c=1,0
+		while n>0 do
+			local r=n%2
+			if r<1 then c=c+p end
+			n,p=(n-r)/2,p*2
+		end
+		return c
+	end
+
+	local BitAND = function(a,b)
+		local p,c=1,0
+		while a>0 and b>0 do
+			local ra,rb=a%2,b%2
+			if ra+rb>1 then c=c+p end
+			a,b,p=(a-ra)/2,(b-rb)/2,p*2
+		end
+		return c
+	end
 	)";
 
 
-	// write and deserialize bytecode
+	// write deserialize function (assume little endian fuck it)
 	// TODO: compressed bytecode bullshit
+	out << R"(
+	local TLChunk = (function(Bytecode)
+		local WaterKey = 0
+		for Idx = 1, #Watermark do
+			WaterKey = ( WaterKey + Byte(Watermark, Idx) * 227 + 83 ) % 479
+			for Idz = 1, #Watermark + -1, 3 do
+				local XOR = 256 * Byte(Watermark, 1 + Idz) + Byte(Watermark, Idz)
+				WaterKey = BitXOR(WaterKey, XOR)
+			end
+		end
+		WaterKey = WaterKey % 256
 
-	// TODO: make the deserialize call here using debug.getinfo().func
-	// TODO: and use the index as a parameter and return how many bytes were read from the func
-	out << R"(local TLChunk = (function(Bytecode)
 		return (function(ReadPos)
+			local ChunkKey = )" << static_cast<uint16_t>( context.chunk_xor_key ) << R"(
 
+			local ReadByte = function(XORKey)
+				local B = Byte(Bytecode, ReadPos, ReadPos)
+				ReadPos = ReadPos + 1
+
+				return BitXOR(B, XORKey)
+			end
+
+			local UpvalKey = )" << static_cast<uint16_t>( context.upval_xor_key ) << R"(
+
+			local ReadInt16 = function(XORKey)
+				local B1, B2 = Byte(Bytecode, ReadPos, ReadPos + 1)
+				ReadPos = ReadPos + 2
+
+				B1, B2 = BitXOR(B1, XORKey), BitXOR(B2, XORKey)
+				return 256 * B2 + B1
+			end
+
+			local ConstKey = )" << static_cast<uint16_t>( context.param_xor_key ) << R"(
+
+			local ReadInt32 = function(XORKey)
+				local B1, B2, B3, B4 = Byte(Bytecode, ReadPos, ReadPos + 3)
+				ReadPos = ReadPos + 4
+
+				B1, B2, B3, B4 = BitXOR(B1, XORKey), BitXOR(B2, XORKey), BitXOR(B3, XORKey), BitXOR(B4, XORKey)
+				return 16777216 * B4 + 65536 * B3 + 256 * B2 + B1
+			end
+
+			local InstrKey = )" << static_cast<uint16_t>( context.instr_xor_key ) << R"(
+
+			local ReadDouble = function(XORKey)
+				local Left = ReadInt32(XORKey)
+				local Right = ReadInt32(XORKey)
+
+				local Sign = (-1) ^ Max(1, BitAND(Right, 2147483648))
+				local Exponent = BitAND(Right, 2146435072) / 1048576
+				local Mantissa = BitAND(Right, 1048575) * 4294967296 + Left
+				local IsNormal = 1
+
+				if Exponent == 2047 then
+					if Mantissa == 0 then
+						return Sign * (1 / 0)
+					else
+						return Sign * (0 / 0)
+					end
+				elseif Exponent == 0 then
+					if Mantissa == 0 then
+						return Sign * 0
+					end
+
+					IsNormal = 0
+					Exponent = 1
+				end
+
+				return LDExp(Sign, Exponent - 1023) * (IsNormal + Mantissa / (2 ^ 52))
+			end
+
+			local ParamKey = )" << static_cast<uint16_t>( context.param_xor_key ) << R"(
+
+			local ReadString = function(XORKey)
+				local Length = ReadInt32(XORKey)
+				local Result = ''
+
+				if Length == 0 then
+					return Result
+				end
+
+				for Idx = 1, Length do
+					Result = Result .. Char( ReadByte(XORKey) )
+				end
+
+				return Result
+			end
+	)";
+
+
+	out << R"(
 		end)(1)
 	end))";
 
+	// write bytecode
 	out << "(\"";
 	for ( uint8_t byte : context.bytecode ) {
 		out << '\\' << static_cast<uint16_t>( byte );
