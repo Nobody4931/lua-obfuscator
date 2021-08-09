@@ -287,7 +287,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 
 
 	// write deserialize function (assume little endian fuck it)
-	// TODO: compressed bytecode bullshit
+	// children please avert your eyes from this shitty code fuckery
 	out << R"(
 	local TLChunk = (function(Bytecode)
 		local WaterKey = 0
@@ -301,7 +301,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 		WaterKey = WaterKey % 256
 
 		return (function(ReadPos)
-			local ChunkKey = )" << static_cast<uint16_t>( context.chunk_xor_key ) << R"(
+			local Chunk, ChunkKey = { 6, 9, {}, {}, {} }, BitXOR()" << static_cast<uint16_t>( context.chunk_xor_key ) << R"(, WaterKey)
 
 			local ReadByte = function(XORKey)
 				local B = Byte(Bytecode, ReadPos, ReadPos)
@@ -310,7 +310,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				return BitXOR(B, XORKey)
 			end
 
-			local UpvalKey = )" << static_cast<uint16_t>( context.upval_xor_key ) << R"(
+			local UpvalKey = BitXOR()" << static_cast<uint16_t>( context.upval_xor_key ) << R"(, WaterKey)
 
 			local ReadInt16 = function(XORKey)
 				local B1, B2 = Byte(Bytecode, ReadPos, ReadPos + 1)
@@ -320,7 +320,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				return 256 * B2 + B1
 			end
 
-			local ConstKey = )" << static_cast<uint16_t>( context.param_xor_key ) << R"(
+			local ConstKey = BitXOR(WaterKey, )" << static_cast<uint16_t>( context.const_xor_key ) << R"()
 
 			local ReadInt32 = function(XORKey)
 				local B1, B2, B3, B4 = Byte(Bytecode, ReadPos, ReadPos + 3)
@@ -330,7 +330,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				return 16777216 * B4 + 65536 * B3 + 256 * B2 + B1
 			end
 
-			local InstrKey = )" << static_cast<uint16_t>( context.instr_xor_key ) << R"(
+			local InstrKey = BitXOR(WaterKey, )" << static_cast<uint16_t>( context.instr_xor_key ) << R"()
 
 			local ReadDouble = function(XORKey)
 				local Left = ReadInt32(XORKey)
@@ -359,7 +359,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				return LDExp(Sign, Exponent - 1023) * (IsNormal + Mantissa / (2 ^ 52))
 			end
 
-			local ParamKey = )" << static_cast<uint16_t>( context.param_xor_key ) << R"(
+			local ParamKey = BitXOR()" << static_cast<uint16_t>( context.param_xor_key ) << R"(, WaterKey)
 
 			local ReadString = function(XORKey)
 				local Length = ReadInt32(XORKey)
@@ -377,12 +377,100 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 			end
 	)";
 
+	for ( uint8_t i = 0; i < 5; ++i ) {
+		switch ( context.chunk_order[i] ) {
+
+			case chunk_order_t::ORD_PARAM_CNT:
+				out << "Chunk[1] = ReadByte(ParamKey)\n";
+				break;
+
+			case chunk_order_t::ORD_UPVAL_CNT:
+				out << "Chunk[2] = ReadByte(UpvalKey)\n";
+				break;
+
+			case chunk_order_t::ORD_INSTRUCTIONS:
+				out << R"(for Idx = 1, ReadInt32(ChunkKey) do
+					Chunk[3][1 + #Chunk[3]] = {}
+				)";
+
+				for ( uint8_t j = 0; j < 3; ++j ) {
+					switch ( context.instr_order[j] ) {
+
+						case instr_order_t::ORD_OPCODE:
+							out << "Chunk[3][Idx][4] = ReadByte(InstrKey)\n";
+							break;
+
+						case instr_order_t::ORD_ENUM:
+							out << "local Enum = ReadByte(InstrKey)\n";
+							break;
+
+						case instr_order_t::ORD_FIELDS:
+							out << R"(local FieldB = ReadInt16(InstrKey)
+							local FieldC = ReadInt16(InstrKey)
+							local FieldA = ReadByte(InstrKey)
+							Chunk[3][Idx][5] = ReadInt32(InstrKey)
+							)";
+							break;
+
+					}
+				}
+
+				out << R"(if Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_ABx ] ) << R"( then
+					Chunk[3][Idx][2], Chunk[3][Idx][1], Chunk[3][Idx][3] =
+						512 * FieldC + FieldB, FieldA
+				elseif Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_AsBx ] ) << R"( then
+					Chunk[3][Idx][2], Chunk[3][Idx][1], Chunk[3][Idx][3] =
+						512 * FieldC + FieldB - 131071, FieldA
+				else
+					if Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_ABC ] ) << R"( then
+						Chunk[3][Idx][3], Chunk[3][Idx][1], Chunk[3][Idx][2] =
+							FieldC, FieldA, FieldB
+					end
+				end
+				)";
+
+				out << "end\n";
+				break;
+
+			case chunk_order_t::ORD_CONSTANTS:
+				out << R"(local ConstCnt = ReadInt32(ChunkKey)
+				for Idx = 1, ConstCnt do
+					Insert(Chunk[4], ReadByte(ConstKey))
+				end
+				for Idx = 1, ConstCnt do
+				)";
+
+				out << R"(if Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NIL ] ) << R"( then
+					Chunk[4][Idx] = nil
+				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NUMBER ] ) << R"( then
+					Chunk[4][Idx] = ReadDouble(ConstKey)
+				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_BOOLEAN ] ) << R"( then
+					Chunk[4][Idx] = ReadByte(ConstKey) ~= 0
+				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_STRING ] ) << R"( then
+					Chunk[4][Idx] = ReadString(ConstKey)
+				end
+				)";
+
+				out << "end\n";
+				break;
+
+			case chunk_order_t::ORD_PROTOTYPES:
+				out << R"(for Idx = 1, ReadInt32(ChunkKey) do
+					Chunk[5][Idx], ReadPos = GetInfo(1)[__Func](ReadPos)
+				end
+				)";
+				break;
+
+		}
+	}
 
 	out << R"(
+			return Chunk, ReadPos
 		end)(1)
 	end))";
 
 	// write bytecode
+	// TODO: compressed bytecode bullshit
 	out << "(\"";
 	for ( uint8_t byte : context.bytecode ) {
 		out << '\\' << static_cast<uint16_t>( byte );
