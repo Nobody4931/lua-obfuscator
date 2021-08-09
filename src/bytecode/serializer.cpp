@@ -32,7 +32,7 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 				write_byte( context.bytecode, context.enum_map[ type ], context.instr_xor_key ^ context.water_xor_key );
 				break;
 
-			case instr_order_t::ORD_FIELDS: // always 5 bytes
+			case instr_order_t::ORD_FIELDS: // always 9 bytes
 				switch ( type ) {
 
 					case instr_t::i_ABC:
@@ -51,6 +51,7 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 				}
 
 				write_byte( context.bytecode, instruction.a, context.instr_xor_key ^ context.water_xor_key );
+				write_int32( context.bytecode, instruction.data, context.instr_xor_key ^ context.water_xor_key );
 				break;
 
 		}
