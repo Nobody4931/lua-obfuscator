@@ -27,18 +27,21 @@
 //			- 1 : The memory where this local upvalue is stored
 //			- 2 : The register index in which this local upvalue is stored
 
+#include <cstdlib>
+#include <cstdint>
+#include <cstring>
+#include <ctime>
+#include <random>
+#include <memory>
 #include <algorithm>
 #include <utility>
-#include <memory>
-#include <random>
-#include <ctime>
-#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <vector>
 #include <set>
 #include <map>
 
+#include "bytecode/datatypes.hpp"
 #include "bytecode/chunk.hpp"
 #include "bytecode/constant.hpp"
 #include "bytecode/instruction.hpp"
@@ -101,6 +104,65 @@ static inline uint8_t unique_byte( std::set<uint8_t>& used, std::default_random_
 	} while ( used.count( byte ) );
 	used.insert( byte );
 	return byte;
+}
+
+static inline size_t count_mutations_used( bool mutations_used[ 256 ], obfuscation_context_t& context, chunk_t& chunk ) {
+	size_t mutations_used_cnt = 0;
+
+	for ( l_int i = 0; i < chunk.instruction_cnt; ++i ) {
+		instruction_t& instruction = chunk.instructions[ i ];
+		uint8_t mutation_idx = context.opcode_map[ instruction.opcode ][ instruction.mutation_idx ].first;
+
+		if ( !mutations_used[ mutation_idx ] )
+			mutations_used_cnt += 1;
+		mutations_used[ mutation_idx ] = true;
+	}
+
+	for ( l_int i = 0; i < chunk.function_cnt; ++i ) {
+		mutations_used_cnt += count_mutations_used( mutations_used, context, chunk.functions[ i ] );
+	}
+
+	return mutations_used_cnt;
+}
+
+static inline void write_opcode_mutations( std::vector<std::pair<uint8_t, vopcode_t*>*>& mutations, size_t mutation, std::stringstream& out, std::default_random_engine& rand_engine ) {
+	if ( mutation >= mutations.size() ) return;
+
+	switch ( rand_engine() % 2 ) {
+
+		case 0:
+			switch ( rand_engine() % 2 ) {
+				case 0:
+					out << "if Instr[4] == " << static_cast<uint16_t>( mutations[ mutation ]->first ) << " then\n";
+					break;
+				case 1:
+					out << "if " << static_cast<uint16_t>( mutations[ mutation ]->first ) << " == Instr[4] then\n";
+					break;
+			}
+
+			out << mutations[ mutation ]->second->string() << '\n';
+			out << "else\n";
+			write_opcode_mutations( mutations, mutation + 1, out, rand_engine );
+			out << "end\n";
+			break;
+
+		case 1:
+			switch( rand_engine() % 2 ) {
+				case 0:
+					out << "if Instr[4] ~= " << static_cast<uint16_t>( mutations[ mutation ]->first ) << " then\n";
+					break;
+				case 1:
+					out << "if " << static_cast<uint16_t>( mutations[ mutation ]->first ) << " ~= Instr[4] then\n";
+					break;
+			}
+
+			write_opcode_mutations( mutations, mutation + 1, out, rand_engine );
+			out << "else\n";
+			out << mutations[ mutation ]->second->string() << '\n';
+			out << "end\n";
+			break;
+
+	}
 }
 
 void generate_vm( chunk_t& chunk, std::stringstream& out ) {
@@ -201,7 +263,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 
 	local Math = math
 	local Abs = Math.abs
-	local Max = Math.max
+	local Min = Math.min
 	local LDExp = Math.ldexp
 
 	local Table = table
@@ -336,7 +398,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				local Left = ReadInt32(XORKey)
 				local Right = ReadInt32(XORKey)
 
-				local Sign = (-1) ^ Max(1, BitAND(Right, 2147483648))
+				local Sign = (-1) ^ Min(1, BitAND(Right, 2147483648))
 				local Exponent = BitAND(Right, 2146435072) / 1048576
 				local Mantissa = BitAND(Right, 1048575) * 4294967296 + Left
 				local IsNormal = 1
@@ -369,14 +431,17 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 					return Result
 				end
 
+				Length = Length + -1
 				for Idx = 1, Length do
 					Result = Result .. Char( ReadByte(XORKey) )
 				end
+				ReadByte(XORKey)
 
 				return Result
 			end
 	)";
 
+	// TODO: refactor this garbage
 	for ( uint8_t i = 0; i < 5; ++i ) {
 		switch ( context.chunk_order[i] ) {
 
@@ -417,10 +482,10 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 
 				out << R"(if Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_ABx ] ) << R"( then
 					Chunk[3][Idx][2], Chunk[3][Idx][1], Chunk[3][Idx][3] =
-						512 * FieldC + FieldB, FieldA
+						65536 * FieldC + FieldB, FieldA
 				elseif Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_AsBx ] ) << R"( then
 					Chunk[3][Idx][2], Chunk[3][Idx][1], Chunk[3][Idx][3] =
-						512 * FieldC + FieldB - 131071, FieldA
+						65536 * FieldC + FieldB - 131071, FieldA
 				else
 					if Enum == )" << static_cast<uint16_t>( context.enum_map[ instr_t::i_ABC ] ) << R"( then
 						Chunk[3][Idx][3], Chunk[3][Idx][1], Chunk[3][Idx][2] =
@@ -437,16 +502,16 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 				for Idx = 1, ConstCnt do
 					Insert(Chunk[4], ReadByte(ConstKey))
 				end
-				for Idx = 1, ConstCnt do
+				for Idx = 0, ConstCnt - 1 do
 				)";
 
-				out << R"(if Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NIL ] ) << R"( then
+				out << R"(if Chunk[4][Idx + 1] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NIL ] ) << R"( then
 					Chunk[4][Idx] = nil
-				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NUMBER ] ) << R"( then
+				elseif Chunk[4][1 + Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_NUMBER ] ) << R"( then
 					Chunk[4][Idx] = ReadDouble(ConstKey)
-				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_BOOLEAN ] ) << R"( then
+				elseif Chunk[4][Idx - -1] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_BOOLEAN ] ) << R"( then
 					Chunk[4][Idx] = ReadByte(ConstKey) ~= 0
-				elseif Chunk[4][Idx] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_STRING ] ) << R"( then
+				elseif Chunk[4][Idx + 1] == )" << static_cast<uint16_t>( context.const_map[ const_t::K_STRING ] ) << R"( then
 					Chunk[4][Idx] = ReadString(ConstKey)
 				end
 				)";
@@ -456,7 +521,7 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 
 			case chunk_order_t::ORD_PROTOTYPES:
 				out << R"(for Idx = 1, ReadInt32(ChunkKey) do
-					Chunk[5][Idx], ReadPos = GetInfo(1)[__Func](ReadPos)
+					Chunk[5][Idx + -1], ReadPos = GetInfo(1)[__Func](ReadPos)
 				end
 				)";
 				break;
@@ -476,6 +541,58 @@ void generate_vm( chunk_t& chunk, std::stringstream& out ) {
 		out << '\\' << static_cast<uint16_t>( byte );
 	}
 	out << "\")\n";
+
+	// write wrapper function
+	out << R"(
+	local Wrap
+	Wrap = function(Upvalues, Env, Chunk)
+		return function(...)
+			local ParamCnt, UpvalCnt, Instrs, Constants, Protos = Unpack(Chunk)
+
+			local Stack = {}
+			local LUpvalues = {}
+
+			local InstrPtr = 1
+			local Args = {...}
+			local Varargs = {}
+
+			for Idx = 0, #Args, 1 do
+				if Idx < ParamCnt then
+					Stack[Idx] = Args[Idx + 1]
+				else
+					Varargs[Idx + -ParamCnt] = Args[Idx + 1]
+				end
+			end
+
+			while InstrPtr do
+				local Instr = Instrs[InstrPtr]
+				InstrPtr = 1 + InstrPtr
+	)";
+
+	bool mutations_used[ 256 ];
+	std::memset( mutations_used, 0, sizeof( mutations_used ) );
+	size_t mutations_used_cnt = count_mutations_used( mutations_used, context, chunk );
+
+	std::vector<std::pair<uint8_t, vopcode_t*>*> mutations;
+	mutations.reserve( mutations_used_cnt );
+
+	for ( auto& op_mapping : context.opcode_map ) {
+		for ( auto& vop_mapping : op_mapping.second ) {
+			if ( mutations_used[ vop_mapping.first ] == true ) {
+				mutations.push_back( &vop_mapping );
+			}
+		}
+	}
+
+	std::shuffle( mutations.begin(), mutations.end(), rand_engine );
+
+	write_opcode_mutations( mutations, 0, out, rand_engine );
+
+	out << R"(
+			end
+		end
+	end
+	)";
 
 	// finish obfuscation
 	out << "return Wrap({}, GetFEnv(0), TLChunk)()\n";
