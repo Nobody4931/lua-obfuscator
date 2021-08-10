@@ -12,3 +12,6 @@ local function fizzbuzz(count)
 end
 
 fizzbuzz(100)
+
+-- TEST RESULTS:
+--> OK
