@@ -20,3 +20,6 @@ fizzbuzz(105, {
 	{ 5, "Buzz" },
 	{ 7, "Bazz" },
 })
+
+-- TEST RESULTS:
+--> OK
