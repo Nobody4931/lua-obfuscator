@@ -15,3 +15,6 @@ print("negative step")
 for iterator = first, last, step do
 	print(iterator)
 end
+
+-- TEST RESULTS
+--> OK
