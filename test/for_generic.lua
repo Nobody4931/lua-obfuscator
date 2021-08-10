@@ -37,3 +37,6 @@ print("next (dict)")
 for index, value in next, data_dict do
 	print(index, value)
 end
+
+-- TEST RESULTS
+--> OK
