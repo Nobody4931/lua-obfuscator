@@ -17,16 +17,17 @@ static inline void serialize_instruction( obfuscation_context_t& context, instru
 	for ( uint8_t i = 0; i < 3; ++i ) {
 		instr_t type = instruction_mappings[ instruction.opcode ];
 
-		uint8_t op_idx = rand_engine() % context.opcode_map[ instruction.opcode ].size();
-		while ( !context.opcode_map[ instruction.opcode ][ op_idx ].second->valid( instruction ) )
-			op_idx = ( op_idx + 1 ) % context.opcode_map[ instruction.opcode ].size();
-		instruction.mutation_idx = op_idx;
-
 		switch ( context.instr_order[i] ) {
 
 			case instr_order_t::ORD_OPCODE:
+			{
+				uint8_t op_idx = rand_engine() % context.opcode_map[ instruction.opcode ].size();
+				while ( !context.opcode_map[ instruction.opcode ][ op_idx ].second->valid( instruction ) )
+					op_idx = ( op_idx + 1 ) % context.opcode_map[ instruction.opcode ].size();
+				instruction.mutation_idx = op_idx;
+
 				write_byte( context.bytecode, context.opcode_map[ instruction.opcode ][ op_idx ].first, context.instr_xor_key ^ context.water_xor_key );
-				break;
+			}	break;
 
 			case instr_order_t::ORD_ENUM:
 				write_byte( context.bytecode, context.enum_map[ type ], context.instr_xor_key ^ context.water_xor_key );
