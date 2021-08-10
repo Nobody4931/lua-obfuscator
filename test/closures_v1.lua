@@ -34,3 +34,7 @@ global_closure(newproxy(), 420.69, false)
 
 local_vararg_closure(true, nil, { "weee" }, "hello", 42)
 global_vararg_closure(function() end, 112, nil, nil, setfenv)
+
+-- TEST RESULTS
+--> "arg" is not available in getfenv()
+--> and im not supporting it so fuck off
