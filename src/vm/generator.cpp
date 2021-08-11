@@ -1,5 +1,6 @@
 // OBFUSCATOR VARIABLES
 
+// TODO: create these two functions for the love of god
 // IsMoveOp() : Checks if an instruction corresponds to a MOVE operation
 // IsGetupvalOp() : Checks if an instruction corresponds to a GETUPVAL operation
 
@@ -51,9 +52,7 @@
 #include "vm/generator.hpp"
 
 #define OBF_NAME "Nobody's Lua Obfuscator"
-#define OBF_VERS "v1.0.0a"
-
-// TODO: create rest of the opcodes
+#define OBF_VERS "v1.0.1a"
 
 // because for some fucking reason i trusted the words of some random guy on discord
 static std::unique_ptr<vmutator_t> virtual_mutators[] {
